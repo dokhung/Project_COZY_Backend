@@ -1,0 +1,35 @@
+server:
+  port: 8000
+  forward-headers-strategy: native
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - file:uploads/
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+  jpa:
+    show-sql: true
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+  google:
+    recaptcha:
+      secret:
