@@ -53,15 +53,16 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         System.out.println("loginDTO :: " + loginDTO);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-            return ResponseEntity.status(403).body("Already logged in");
+            return ResponseEntity.status(403).body("이미 로그인된 상태입니다.");
         }
 
         try {
-            String token = authService.login(loginDTO.getEmail(), loginDTO.getPassword());
+            Map<String, Object> loginResponse = authService.login(loginDTO.getEmail(), loginDTO.getPassword());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                    .body(token);
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + loginResponse.get("token"))
+                    .body(loginResponse);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
@@ -92,4 +93,49 @@ public class AuthController {
         boolean isAvailable = authService.isEmailAvailable(email);
         return ResponseEntity.ok().body(Map.of("available", isAvailable));
     }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).body(Map.of("error", "로그인이 필요합니다."));
+        }
+
+        String userEmail = authentication.getName();
+        String inputPassword = request.get("password");
+
+        try {
+            boolean isValid = authService.verifyPassword(userEmail, inputPassword);
+            return ResponseEntity.ok(Map.of("valid", isValid));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(Map.of("error", "비밀번호가 일치하지 않습니다."));
+        }
+    }
+
+    @PostMapping("/update-info")
+    public ResponseEntity<?> updateUserInfo(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> request
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        String userEmail = authentication.getName();
+        String newNickname = request.get("nickname");
+        String newStatusMessage = request.get("statusMessage");
+
+        try {
+            User updatedUser = authService.updateUserInfo(userEmail, newNickname, newStatusMessage);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+
+
 }

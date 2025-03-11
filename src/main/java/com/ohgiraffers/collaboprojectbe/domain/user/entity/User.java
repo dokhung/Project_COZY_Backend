@@ -23,6 +23,9 @@ public class User {
     @Column(name = "profile_image", length = 500)
     private String profileImageUrl;
 
+    @Column(name = "statusMessage")
+    private String statusMessage;
+
     private LocalDateTime registrationDate;
 
     public User() {
@@ -47,4 +50,20 @@ public class User {
 
     public LocalDateTime getRegistrationDate() { return registrationDate; }
     public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
+
+    public String getStatusMessage() { return statusMessage; }
+    public void setStatusMessage(String statusMessage) { this.statusMessage = statusMessage; }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", statusMessage='" + statusMessage + '\'' +
+                ", registrationDate=" + registrationDate +
+                '}';
+    }
 }

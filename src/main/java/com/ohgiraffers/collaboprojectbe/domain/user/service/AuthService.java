@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,29 +39,37 @@ public class AuthService {
     private static final String UPLOAD_DIR = "uploads/profile_images/";
 
     // 로그인 로직
-    public String login(String email, String password) {
+    public Map<String, Object> login(String email, String password) {
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+
         if (currentAuth != null && currentAuth.isAuthenticated() && !"anonymousUser".equals(currentAuth.getName())) {
-            System.out.println("User is already logged in: " + currentAuth.getName());
-            throw new IllegalStateException("Already logged in.");
+            System.out.println("로그인한 유저의 아이디 : " + currentAuth.getName());
+            throw new IllegalStateException("로그인이 성공하였습니다.");
         }
 
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+
             if (passwordEncoder.matches(password, user.getPassword())) {
-                System.out.println("User authenticated successfully: " + user.getEmail());
+                System.out.println("성공적인 로그인 : " + user.getEmail());
+
                 String token = jwtTokenProvider.createToken(user.getEmail());
-                System.out.println("Generated JWT token: " + token);
-                return token;
-            } else {
-                System.out.println("Invalid password for user: " + email);
-                throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+                System.out.println("생성된 토큰의 코드 :: " + token);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                response.put("user", user);
+                return response;
             }
-        } else {
-            System.out.println("User not found: " + email);
-            throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
+            else {
+                System.out.println("사용자에게 잘못된 비밀번호" + email);
+                throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
+            }
+        }else {
+            System.out.println("알수가 없는 이메일 입니다." + email);
+            throw new IllegalArgumentException("잘못된 이메일 입니다.");
         }
     }
 
@@ -108,6 +118,40 @@ public class AuthService {
     public boolean isEmailAvailable(String email) {
         return userRepository.findByEmail(email).isEmpty();
     }
+
+    public boolean verifyPassword(String email, String inputPassword) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+
+        User user = userOptional.get();
+        if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return true;
+    }
+
+    public User updateUserInfo(String email, String newNickname, String newStatusMessage) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            if (newNickname != null && !newNickname.isEmpty()) {
+                user.setNickname(newNickname);
+            }
+            if (newStatusMessage != null) {
+                user.setStatusMessage(newStatusMessage);
+            }
+
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+    }
+
 
 
 }
