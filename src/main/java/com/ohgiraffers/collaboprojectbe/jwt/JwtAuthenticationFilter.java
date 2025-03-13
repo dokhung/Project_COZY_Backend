@@ -4,13 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -26,21 +24,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = getTokenFromRequest(request);
 
-        // 디버깅용 로그 추가
-        System.out.println("Token received in filter: " + token);
+        System.out.println("🔍 Token received in filter: " + token);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getUsernameFromToken(token);
-            System.out.println("Parsed username from token: " + username);
+            System.out.println("✅ 사용자 인증됨: " + username);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(username, null, null);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("Authentication set in SecurityContextHolder for user: " + username);
         } else {
-            System.out.println("No valid JWT Token found. Setting authentication to null.");
+            System.out.println("❌ No valid JWT Token found. Setting authentication to null.");
         }
 
         filterChain.doFilter(request, response);

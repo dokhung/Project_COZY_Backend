@@ -1,6 +1,7 @@
 package com.ohgiraffers.collaboprojectbe.domain.user.service;
 
 import com.ohgiraffers.collaboprojectbe.domain.user.dto.SignUpDTO;
+import com.ohgiraffers.collaboprojectbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.collaboprojectbe.domain.user.entity.User;
 import com.ohgiraffers.collaboprojectbe.domain.user.repository.UserRepository;
 import com.ohgiraffers.collaboprojectbe.jwt.JwtTokenProvider;
@@ -33,67 +34,50 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private FileService fileService;
-
     private static final String UPLOAD_DIR = "uploads/profile_images/";
+    private static final String SERVER_URL = "http://localhost:8080/"; // ✅ 클라이언트에서 접근 가능하게 설정
 
-    // 로그인 로직
     public Map<String, Object> login(String email, String password) {
-        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
 
-        if (currentAuth != null && currentAuth.isAuthenticated() && !"anonymousUser".equals(currentAuth.getName())) {
-            System.out.println("로그인한 유저의 아이디 : " + currentAuth.getName());
-            throw new IllegalStateException("로그인이 성공하였습니다.");
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        // ✅ JWT 생성
+        String token = jwtTokenProvider.createToken(user.getEmail());
+        System.out.println("🔑 생성된 JWT: " + token);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("user", user);
 
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                System.out.println("성공적인 로그인 : " + user.getEmail());
-
-                String token = jwtTokenProvider.createToken(user.getEmail());
-                System.out.println("생성된 토큰의 코드 :: " + token);
-
-                Map<String, Object> response = new HashMap<>();
-                response.put("token", token);
-                response.put("user", user);
-                return response;
-            }
-            else {
-                System.out.println("사용자에게 잘못된 비밀번호" + email);
-                throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
-            }
-        }else {
-            System.out.println("알수가 없는 이메일 입니다." + email);
-            throw new IllegalArgumentException("잘못된 이메일 입니다.");
-        }
+        return response;
     }
 
 
+    // 🔹 회원가입 처리
     public User register(SignUpDTO signUpDTO, MultipartFile profileImage) throws IOException {
         String profileImageUrl = null;
-
         if (profileImage != null && !profileImage.isEmpty()) {
-            profileImageUrl = saveProfileImage(profileImage); // 이미지 저장 후 파일 경로 반환
+            profileImageUrl = saveProfileImage(profileImage);
         }
 
         User user = new User();
         user.setEmail(signUpDTO.getEmail());
         user.setNickname(signUpDTO.getNickname());
         user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-        user.setProfileImageUrl(profileImageUrl); // **DB에 파일 경로 저장**
+        user.setProfileImageUrl(profileImageUrl);
 
         return userRepository.save(user);
     }
 
+    // 🔹 프로필 이미지 저장 (서버 URL 반환)
     private String saveProfileImage(MultipartFile file) throws IOException {
         File uploadDir = new File(UPLOAD_DIR);
         if (!uploadDir.exists()) {
-            uploadDir.mkdirs(); // 디렉토리가 없으면 생성
+            uploadDir.mkdirs();
         }
 
         String originalFileName = file.getOriginalFilename();
@@ -101,57 +85,85 @@ public class AuthService {
             throw new IllegalArgumentException("파일 이름이 존재하지 않습니다.");
         }
 
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")); // 확장자 추출
-        String newFileName = UUID.randomUUID() + fileExtension; // 중복 방지를 위해 UUID 사용
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String newFileName = UUID.randomUUID() + fileExtension;
 
-        Path filePath = Path.of(UPLOAD_DIR, newFileName); // 저장할 파일 경로
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING); // 파일 저장
+        Path filePath = Path.of(UPLOAD_DIR, newFileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return newFileName; // **DB에는 파일명만 저장**
+        return SERVER_URL + UPLOAD_DIR + newFileName; // ✅ 전체 URL 반환
     }
 
-    public User getUserInfo(String userId) {
-        return userRepository.findByEmail(userId)
+    // 🔹 현재 로그인된 사용자 정보 가져오기
+    public User getUserInfo(String token) {
+        String userEmail = jwtTokenProvider.getUsernameFromToken(token);
+        return userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
+    // 🔹 이메일 중복 확인
     public boolean isEmailAvailable(String email) {
         return userRepository.findByEmail(email).isEmpty();
     }
 
     public boolean verifyPassword(String email, String inputPassword) {
         Optional<User> userOptional = userRepository.findByEmail(email);
+
         if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+            throw new IllegalArgumentException("❌ 사용자를 찾을 수 없습니다.");
         }
 
         User user = userOptional.get();
+
+        System.out.println("🔍 입력된 비밀번호: " + inputPassword);
+        System.out.println("🔍 저장된 해시된 비밀번호: " + user.getPassword());
+
         if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
+            System.out.println("❌ 비밀번호가 일치하지 않음");
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        System.out.println("✅ 비밀번호 검증 성공");
         return true;
     }
 
-    public User updateUserInfo(String email, String newNickname, String newStatusMessage) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+    public User updateUserInfo(String email, UserUpdateDTO userUpdateDTO, MultipartFile profileImage) throws IOException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        user.setNickname(userUpdateDTO.getNickname());
+        user.setStatusMessage(userUpdateDTO.getStatusMessage());
 
-            if (newNickname != null && !newNickname.isEmpty()) {
-                user.setNickname(newNickname);
+        // ✅ 기존 이미지 삭제 후 새로운 이미지 저장
+        if (profileImage != null && !profileImage.isEmpty()) {
+            if (user.getProfileImageUrl() != null) {
+                File oldFile = new File(user.getProfileImageUrl());
+                if (oldFile.exists()) {
+                    oldFile.delete();  // 기존 이미지 삭제
+                }
             }
-            if (newStatusMessage != null) {
-                user.setStatusMessage(newStatusMessage);
-            }
 
-            return userRepository.save(user);
-        } else {
-            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+            String profileImageUrl = saveProfileImage(profileImage);
+            user.setProfileImageUrl(profileImageUrl);
         }
+
+        return userRepository.save(user);
     }
 
+
+
+    // 🔹 JWT에서 이메일 추출 (사용자 이메일 가져오기)
+    public String getEmailFromToken(String token) {
+        return jwtTokenProvider.getUsernameFromToken(token);
+    }
+
+    public String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // 현재 로그인된 사용자의 이메일 반환
+        }
+        return null;
+    }
 
 
 }

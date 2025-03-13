@@ -1,32 +1,41 @@
 server:
-  port: 8000
-  forward-headers-strategy: native
+  port: 8000  # 서버 포트 설정
+  forward-headers-strategy: native  # 헤더 전달 전략 설정
+
 spring:
   servlet:
     multipart:
-      enabled: true
-      max-file-size: 5MB
-      max-request-size: 10MB
+      enabled: true  # 파일 업로드 활성화
+      max-file-size: 5MB  # 업로드 가능한 파일 크기 제한
+      max-request-size: 10MB  # 한 번에 업로드할 수 있는 최대 요청 크기
+
   web:
     resources:
       static-locations:
-        - classpath:/static/
-        - file:uploads/
+        - classpath:/static/  # 정적 리소스 위치
+        - file:uploads/  # 업로드된 파일 저장 위치
+
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:.env[.properties]  # `.env` 파일에서 환경 변수 가져오기
+
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 설정
+    url: ${MYSQL_URL}  # MySQL 연결 URL (환경 변수에서 가져옴)
+    username: ${MYSQL_USER}  # MySQL 사용자명 (환경 변수에서 가져옴)
+    password: ${MYSQL_PASSWORD}  # MySQL 비밀번호 (환경 변수에서 가져옴)
+
   jpa:
-    show-sql: true
-    database: mysql
+    show-sql: true  # 실행된 SQL 쿼리 출력
+    database: mysql  # 데이터베이스 타입 설정
     hibernate:
-      ddl-auto: update
+      ddl-auto: update  # 스키마 자동 업데이트
     properties:
       hibernate:
-        format_sql: true
-        show_sql: true
-        highlight_sql: true
-        use_sql_comments: true
+        format_sql: true  # SQL 쿼리 포맷 정리하여 출력
+        show_sql: true  # SQL 쿼리 출력 여부
+        highlight_sql: true  # SQL 쿼리 강조 표시
+        use_sql_comments: true  # SQL 주석 포함하여 출력
+
+jwt:
+  secret: ${JWT_SECRET}  # JWT 비밀 키 (환경 변수에서 가져옴)
+  expiration: ${JWT_EXPIRATION}  # JWT 만료 시간 (환경 변수에서 가져옴)

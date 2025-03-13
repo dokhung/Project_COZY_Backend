@@ -27,12 +27,13 @@ public class SecurityConfig {
     }
 
     private static final String[] WHITE_LIST = {
-            "/api/auth/**", // 인증 관련 모든 경로 허용
+            "/api/auth/**",  // ✅ 인증 관련 모든 경로 허용
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
     };
 
+    // 🔹 비밀번호 암호화 설정
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,15 +45,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(WHITE_LIST).permitAll()
-                        .anyRequest().permitAll()// 배포시 authenticated() 하기
+                        .requestMatchers(WHITE_LIST).permitAll()  // ✅ `/api/auth/**` 허용됨
+                        .anyRequest().authenticated() // 배포시 활성화 필요
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // JWT 인증에는 무상태 세션 사용
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
 
+    // 🔹 CORS 설정 (React와 통신 허용)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -67,4 +69,3 @@ public class SecurityConfig {
     }
 
 }
-

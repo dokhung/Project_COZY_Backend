@@ -54,6 +54,7 @@ public class User {
     public String getStatusMessage() { return statusMessage; }
     public void setStatusMessage(String statusMessage) { this.statusMessage = statusMessage; }
 
+
     @Override
     public String toString() {
         return "User{" +

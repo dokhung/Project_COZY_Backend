@@ -1,18 +1,15 @@
 package com.ohgiraffers.collaboprojectbe.domain.user.dto;
 
 public class SignUpDTO {
-    //계정
     private String email;
-    //비번
     private String password;
-    // 비번중복 확인
     private String confirmPassword;
-    //닉네임
     private String nickname;
-    //이메일 수신
     private String receiveEmail;
-    // 로봇이 아닌지 맞는지
     private String captcha;
+
+    // ✅ 상태 메시지 필드 추가
+    private String statusMessage;
 
     public String getEmail() {
         return email;
@@ -62,6 +59,14 @@ public class SignUpDTO {
         this.captcha = captcha;
     }
 
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+
     @Override
     public String toString() {
         return "SignUpDTO{" +
@@ -71,7 +76,7 @@ public class SignUpDTO {
                 ", nickname='" + nickname + '\'' +
                 ", receiveEmail='" + receiveEmail + '\'' +
                 ", captcha='" + captcha + '\'' +
+                ", statusMessage='" + statusMessage + '\'' +
                 '}';
     }
 }
-

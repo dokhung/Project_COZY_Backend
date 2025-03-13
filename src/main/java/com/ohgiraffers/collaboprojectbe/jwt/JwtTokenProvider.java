@@ -1,35 +1,51 @@
 package com.ohgiraffers.collaboprojectbe.jwt;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private final Key key = Keys.hmacShaKeyFor("1476986843aa1e80c8374122a839da127ce0abcb76a60986ad7eb887a2c32fe93262cd7b8687a43eab82715e042a2646e0b73eaf2b94c80888a8408298187b67".getBytes());
-    private final long EXPIRATION_TIME = 86400000L; // 1 day in milliseconds
+    private final Key key;
+    private final long expiration;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expiration = expiration;
+    }
 
     public String createToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        if (token == null || token.trim().isEmpty()) {
+            System.out.println("❌ 토큰이 비어있음!");
+            return null;
+        }
+
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (Exception e) {
+            System.out.println("❌ JWT 파싱 오류: " + e.getMessage());
+            return null;
+        }
     }
 
     public boolean validateToken(String token) {
@@ -37,6 +53,7 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("❌ JWT 검증 실패: " + e.getMessage());
             return false;
         }
     }
