@@ -4,11 +4,8 @@ public class UserUpdateDTO {
     private String nickname;
     private String statusMessage;
 
-    // 기본 생성자 추가
-    public UserUpdateDTO() {
-    }
+    public UserUpdateDTO() {}
 
-    // 모든 필드를 초기화하는 생성자 추가
     public UserUpdateDTO(String nickname, String statusMessage) {
         this.nickname = nickname;
         this.statusMessage = statusMessage;
