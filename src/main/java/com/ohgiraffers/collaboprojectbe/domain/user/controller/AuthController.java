@@ -158,17 +158,30 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         if (token == null || !token.startsWith("Bearer ")) {
+            System.out.println("❌ [로그아웃 실패] 인증 토큰이 없습니다.");
             return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 필요합니다."));
         }
 
         try {
-            String email = authService.getEmailFromToken(token.substring(7));
-            authService.invalidateToken(token.substring(7)); // 🔹 토큰 무효화 처리
+            String jwtToken = token.substring(7);
+            String email = authService.getEmailFromToken(jwtToken);
+
+            System.out.println("🔹 [로그아웃 요청] 사용자 이메일: " + email);
+            System.out.println("🔹 [로그아웃 요청] 토큰: " + jwtToken);
+
+            // 토큰 무효화 처리
+            authService.invalidateToken(jwtToken);
+
+            // 로그아웃 성공 메시지 출력
+            System.out.println("✅ [로그아웃 완료] 사용자 이메일: " + email);
+
             return ResponseEntity.ok(Map.of("message", "로그아웃 성공"));
         } catch (Exception e) {
+            System.out.println("❌ [로그아웃 중 오류 발생]: " + e.getMessage());
             return ResponseEntity.status(500).body(Map.of("error", "로그아웃 중 오류 발생: " + e.getMessage()));
         }
     }
+
 
 
 

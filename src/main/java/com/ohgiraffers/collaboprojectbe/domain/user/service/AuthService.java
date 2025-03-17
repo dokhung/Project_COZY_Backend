@@ -166,11 +166,15 @@ public class AuthService {
 
     public void invalidateToken(String token) {
         invalidatedTokens.add(token);
+        System.out.println("🚀 [토큰 무효화] 저장된 무효화된 토큰 개수: " + invalidatedTokens.size());
     }
 
     public boolean isTokenValid(String token) {
-        return !invalidatedTokens.contains(token); // 🔹 블랙리스트에 없으면 유효한 토큰
+        boolean isValid = !invalidatedTokens.contains(token);
+        System.out.println("🔍 [토큰 검증] 토큰 유효성 검사 결과: " + (isValid ? "✅ 유효한 토큰" : "❌ 무효한 토큰"));
+        return isValid;
     }
+
 
 
 }
