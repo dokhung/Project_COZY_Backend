@@ -1,5 +1,6 @@
 services:
   app-db:
+    container_name: ${MYSQL_DATABASE}
     image: mysql:8.0
     command:
       --collation-server=utf8mb4_0900_bin
