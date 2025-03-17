@@ -24,19 +24,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = getTokenFromRequest(request);
 
-        System.out.println("🔍 Token received in filter: " + token);
-
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getUsernameFromToken(token);
-            System.out.println("✅ 사용자 인증됨: " + username);
+            if (username != null) {
+                System.out.println("✅ 사용자 인증됨: " + username);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, null);
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(username, null, null);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         } else {
-            System.out.println("❌ No valid JWT Token found. Setting authentication to null.");
+            System.out.println("❌ 유효한 JWT 토큰이 없음");
         }
 
         filterChain.doFilter(request, response);

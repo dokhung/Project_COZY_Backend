@@ -38,3 +38,6 @@ out/
 
 ### Environment Files ###
 .env
+
+# JetBrains IDE (WebStorm, IntelliJ, etc.)
+.idea/

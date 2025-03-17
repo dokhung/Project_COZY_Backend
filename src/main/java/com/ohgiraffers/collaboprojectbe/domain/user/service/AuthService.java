@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -163,6 +160,16 @@ public class AuthService {
             return authentication.getName(); // 현재 로그인된 사용자의 이메일 반환
         }
         return null;
+    }
+
+    private Set<String> invalidatedTokens = new HashSet<>(); // 🚀 블랙리스트 (무효화된 토큰 저장)
+
+    public void invalidateToken(String token) {
+        invalidatedTokens.add(token);
+    }
+
+    public boolean isTokenValid(String token) {
+        return !invalidatedTokens.contains(token); // 🔹 블랙리스트에 없으면 유효한 토큰
     }
 
 
