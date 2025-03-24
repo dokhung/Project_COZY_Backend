@@ -39,3 +39,9 @@ spring:
 jwt:
   secret: ${JWT_SECRET}  # JWT 비밀 키 (환경 변수에서 가져옴)
   expiration: ${JWT_EXPIRATION}  # JWT 만료 시간 (환경 변수에서 가져옴)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
