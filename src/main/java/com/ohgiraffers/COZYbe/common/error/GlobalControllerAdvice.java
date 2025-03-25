@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO : 2025/03/25 @RestControllerAdvice <-- 주석 풀면 스웨거 안됨
+
 @Slf4j
-//@RestControllerAdvice
+@RestControllerAdvice
 public class GlobalControllerAdvice {
 
     @ExceptionHandler(ApplicationException.class)

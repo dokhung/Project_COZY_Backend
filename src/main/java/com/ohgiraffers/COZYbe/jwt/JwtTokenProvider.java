@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashSet;
@@ -34,22 +35,23 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // ✅ JWT에서 사용자 이메일 추출
+    // ✅ 토큰에서 사용자 이름(이메일) 추출
     public String getUsernameFromToken(String token) {
         if (token == null || token.trim().isEmpty()) {
-            System.out.println("❌ [JWT 프로바이더] 토큰이 비어있음!");
+            System.out.println("❌ [JWT] 토큰이 비어있음");
             return null;
         }
 
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
+            Claims claims = Jwts.parser()           // ✅ parserBuilder → parser
+                    .verifyWith((SecretKey) key)               // ✅ setSigningKey → verifyWith
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)      // ✅ parseClaimsJws → parseSignedClaims
+                    .getPayload();
+
             return claims.getSubject();
         } catch (Exception e) {
-            System.out.println("❌ [JWT 프로바이더] JWT 파싱 오류: " + e.getMessage());
+            System.out.println("❌ [JWT 파싱 오류] " + e.getMessage());
             return null;
         }
     }
@@ -61,7 +63,7 @@ public class JwtTokenProvider {
                 System.out.println("❌ [JWT 프로바이더] 무효화된 토큰입니다.");
                 return false;
             }
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             System.out.println("❌ [JWT 프로바이더] JWT 검증 실패: " + e.getMessage());
