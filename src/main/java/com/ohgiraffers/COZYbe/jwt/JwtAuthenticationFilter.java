@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collections;
 
-@Component // ✅ Bean으로 등록하여 SecurityConfig에서 @Bean 등록 없이 자동 주입 가능
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
