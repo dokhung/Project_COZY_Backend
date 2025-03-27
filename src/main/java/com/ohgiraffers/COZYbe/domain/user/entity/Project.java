@@ -4,6 +4,9 @@ import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -25,12 +28,7 @@ public class Project extends BaseTimeEntity {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Override
-    public String toString() {
-        return "Project{" +
-                "projectId=" + projectId +
-                ", projectName='" + projectName + '\'' +
-                ", owner=" + owner +
-                '}';
-    }
+    //TODO:관심사
+    @Column(nullable = false)
+    private String interest;
 }
