@@ -1,7 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.teams.application.service;
 
-import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamListDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import com.ohgiraffers.COZYbe.domain.teams.domain.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,15 +13,15 @@ import java.util.List;
 @Service
 public class TeamService {
 
-    private TeamRepository repository;
-    private TeamMapper mapper;
+    private final TeamRepository repository;
+    private final TeamMapper mapper;
 
-    public TeamListDTO getAllList() {
+    public List<TeamNameDTO> getAllList() {
         List<Team> teams = repository.findAll();
-        return mapper.entityToNames(teams);
+        return mapper.entityToDtoList(teams);
     }
 
-    public TeamNameDTO createTeam() {
+    public TeamDetailDTO createTeam() {
         return null;
     }
 }

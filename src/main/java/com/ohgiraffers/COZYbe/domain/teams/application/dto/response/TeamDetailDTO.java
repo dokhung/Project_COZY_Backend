@@ -1,9 +1,11 @@
 package com.ohgiraffers.COZYbe.domain.teams.application.dto.response;
 
+
 import java.util.UUID;
 
-public record TeamNameDTO(
+public record TeamDetailDTO(
         UUID teamId,
-        String teamName
+        String teamName,
+        String description
 ) {
 }
