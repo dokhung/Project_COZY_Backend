@@ -51,6 +51,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.36'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
 
+    implementation("org.mapstruct:mapstruct:1.6.3")
 }
 
 tasks.named('test') {

@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.teams.entity;
+package com.ohgiraffers.COZYbe.domain.teams.domain.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
 import jakarta.persistence.*;

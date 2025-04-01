@@ -1,7 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.member.entity;
 
 import com.ohgiraffers.COZYbe.common.ImmutableEntity;
-import com.ohgiraffers.COZYbe.domain.teams.entity.Team;
+import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
