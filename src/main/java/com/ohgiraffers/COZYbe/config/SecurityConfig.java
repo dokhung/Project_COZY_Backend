@@ -2,6 +2,8 @@ package com.ohgiraffers.COZYbe.config;
 
 import com.ohgiraffers.COZYbe.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
+import com.ohgiraffers.COZYbe.jwt.JwtWhiteListHolder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,23 +18,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
-
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider, JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    private static final String[] WHITE_LIST = {
-            "/api/auth/**",  // ✅ 인증 관련 모든 경로 허용
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html"
-    };
+    private final JwtWhiteListHolder whiteListHolder;
 
     // 🔹 비밀번호 암호화 설정
     @Bean
@@ -46,7 +38,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(WHITE_LIST).permitAll()  // ✅ `/api/auth/**` 허용됨
+                        .requestMatchers(whiteListHolder.getWhiteList()).permitAll()  // ✅ `/api/auth/**` 허용됨
                         .anyRequest().authenticated() // 배포시 활성화 필요
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
