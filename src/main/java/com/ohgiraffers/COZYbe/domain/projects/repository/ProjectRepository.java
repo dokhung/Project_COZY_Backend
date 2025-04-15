@@ -1,6 +1,6 @@
-package com.ohgiraffers.COZYbe.domain.user.repository;
+package com.ohgiraffers.COZYbe.domain.projects.repository;
 
-import com.ohgiraffers.COZYbe.domain.user.entity.Project;
+import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

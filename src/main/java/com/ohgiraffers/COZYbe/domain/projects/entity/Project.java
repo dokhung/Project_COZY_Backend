@@ -1,11 +1,9 @@
-package com.ohgiraffers.COZYbe.domain.user.entity;
+package com.ohgiraffers.COZYbe.domain.projects.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
+import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
