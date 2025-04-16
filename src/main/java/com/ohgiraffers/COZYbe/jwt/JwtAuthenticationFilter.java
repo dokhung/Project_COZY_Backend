@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("🔍 Token received in filter: " + token);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsernameFromToken(token);
+            String username = jwtTokenProvider.decodeUserIdFromJwt(token);
             System.out.println("✅ 사용자 인증됨: " + username);
 
             UsernamePasswordAuthenticationToken authentication =

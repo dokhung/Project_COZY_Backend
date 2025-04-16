@@ -14,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,19 +29,35 @@ public class JwtTokenProvider {
         this.expiration = expiration;
     }
 
-    // ✅ JWT 생성
-    public String createToken(String username) {
+    /**
+     * 토큰생성
+     * <pre>{@code
+     * issuer : 발행자, 서버
+     * sub : userId
+     * audience : 토큰 수신자, 대상 애플리케이션
+     * issuedAt : 발행일
+     * exp : 만료일
+     * content : 추가 가능
+     * }</pre>
+     *
+     * @param userId User UUID;
+     * @return JWT Token
+     * */
+    public String createToken(UUID userId) {
         return Jwts.builder()
-                .subject(username)
+                .issuer("COZY")
+                .subject(userId.toString())
+                .audience().add("COZY CLIENT").and()
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
+                .content("")
                 .signWith(key)
                 .compact();
     }
 
-    // ✅ 토큰에서 사용자 이름(이메일) 추출
+    // ✅ 토큰에서 userId 추출
 //    @Nullable
-    public String getUsernameFromToken(String token) {
+    public String decodeUserIdFromJwt(String token) {
         if (token == null || token.trim().isEmpty()) {
             log.error("Token is Empty");
             throw new ApplicationException(ErrorCode.INVALID_TOKEN);
