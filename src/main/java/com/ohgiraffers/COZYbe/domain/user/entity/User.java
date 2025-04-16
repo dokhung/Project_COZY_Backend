@@ -4,6 +4,8 @@ import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Builder
 @Getter
 @Setter
@@ -15,8 +17,8 @@ import lombok.*;
 public class User extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID userId;
 
     @Column(nullable = false, unique = true)
     private String email;

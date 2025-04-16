@@ -1,16 +1,13 @@
-package com.ohgiraffers.COZYbe.domain.user.controller;
+package com.ohgiraffers.COZYbe.domain.projects.controller;
 
-import com.ohgiraffers.COZYbe.domain.user.dto.CreateProjectInterestDTO;
-import com.ohgiraffers.COZYbe.domain.user.entity.Project;
-import com.ohgiraffers.COZYbe.domain.user.service.ProjectService;
+import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectInterestDTO;
+import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
+import com.ohgiraffers.COZYbe.domain.projects.service.ProjectService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,7 +38,7 @@ public class ProjectController {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        String email = jwtTokenProvider.getUsernameFromToken(token);
+        String email = jwtTokenProvider.decodeUserIdFromJwt(token);
 
         Project project = projectService.createProject(dto, email); // 🔥 반환된 엔티티 사용
         return ResponseEntity.ok(Map.of(
@@ -57,7 +54,7 @@ public class ProjectController {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        String email = jwtTokenProvider.getUsernameFromToken(token);
+        String email = jwtTokenProvider.decodeUserIdFromJwt(token);
         Optional<Project> projectOpt = projectService.getProjectByUserEmail(email);
 
         if (projectOpt.isPresent()) {

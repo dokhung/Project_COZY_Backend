@@ -44,7 +44,7 @@ public class AuthService {
         }
 
         // ✅ JWT 생성
-        String token = jwtTokenProvider.createToken(user.getEmail());
+        String token = jwtTokenProvider.createToken(user.getUserId());
         System.out.println("🔑 생성된 JWT: " + token);
 
         Map<String, Object> response = new HashMap<>();
@@ -68,10 +68,6 @@ public class AuthService {
                 .password(passwordEncoder.encode(signUpDTO.getPassword()))
                 .profileImageUrl(profileImageUrl)
                 .build();
-//        user.setEmail(signUpDTO.getEmail());
-//        user.setNickname(signUpDTO.getNickname());
-//        user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-//        user.setProfileImageUrl(profileImageUrl);
 
         return userRepository.save(user);
     }
@@ -99,7 +95,7 @@ public class AuthService {
 
     // 🔹 현재 로그인된 사용자 정보 가져오기
     public User getUserInfo(String token) {
-        String userEmail = jwtTokenProvider.getUsernameFromToken(token);
+        String userEmail = jwtTokenProvider.decodeUserIdFromJwt(token);
         return userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
@@ -157,7 +153,7 @@ public class AuthService {
 
     // 🔹 JWT에서 이메일 추출 (사용자 이메일 가져오기)
     public String getEmailFromToken(String token) {
-        return jwtTokenProvider.getUsernameFromToken(token);
+        return jwtTokenProvider.decodeUserIdFromJwt(token);
     }
 
     public String getCurrentUserEmail() {

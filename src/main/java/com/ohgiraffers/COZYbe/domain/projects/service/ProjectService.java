@@ -1,14 +1,12 @@
-package com.ohgiraffers.COZYbe.domain.user.service;
+package com.ohgiraffers.COZYbe.domain.projects.service;
 
-import com.ohgiraffers.COZYbe.domain.user.dto.CreateProjectInterestDTO;
-import com.ohgiraffers.COZYbe.domain.user.entity.Project;
+import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectInterestDTO;
+import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.repository.ProjectRepository;
+import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
