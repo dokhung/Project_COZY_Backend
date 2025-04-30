@@ -42,7 +42,7 @@ public class ProjectService {
                 .interest(dto.getInterest()) // 관심사 추가
                 .build();
 
-        return projectRepository.save(project); // ✅ 저장 후 바로 리턴
+        return projectRepository.save(project);
     }
 
     //TODO: ProjectInfo
@@ -52,4 +52,7 @@ public class ProjectService {
         return projectRepository.findFirstByOwner(user);
     }
 
+    public Optional<Project> getProjectByName(String projectName) {
+        return projectRepository.findByProjectName(projectName);
+    }
 }

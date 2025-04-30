@@ -47,25 +47,40 @@ public class ProjectController {
         ));
     }
 
-    //TODO:프로젝트 보유 유무
-    @GetMapping("/my-project")
-    public ResponseEntity<?> getMyProjectInfo(HttpServletRequest request) {
+    @GetMapping("/my-projectinfo")
+    public ResponseEntity<?> getMyProjectInfo(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
         String email = jwtTokenProvider.decodeUserIdFromJwt(token);
         Optional<Project> projectOpt = projectService.getProjectByUserEmail(email);
+        if (projectOpt.isPresent()) {
+            Project project = projectOpt.get();
+            return ResponseEntity.ok(Map.of(
+                    "projectid",project.getProjectId(),
+                    "projectName", project.getProjectName(),
+                    "createdAt", project.getCreatedAt()
+            ));
+        }else {
+            return ResponseEntity.ok(Map.of("message", "Project not found"));
+        }
+    }
+
+    @GetMapping("/name/{projectName}")
+    public ResponseEntity<?> getProjectByName(@PathVariable String projectName) {
+        Optional<Project> projectOpt = projectService.getProjectByName(projectName);
 
         if (projectOpt.isPresent()) {
             Project project = projectOpt.get();
             return ResponseEntity.ok(Map.of(
                     "projectId", project.getProjectId(),
                     "projectName", project.getProjectName(),
+                    "interest", project.getInterest(),
                     "createdAt", project.getCreatedAt()
             ));
-        }else{
-            return ResponseEntity.ok(Map.of("message", "Project not found"));
+        } else {
+            return ResponseEntity.status(404).body(Map.of("error", "Project not found"));
         }
     }
 

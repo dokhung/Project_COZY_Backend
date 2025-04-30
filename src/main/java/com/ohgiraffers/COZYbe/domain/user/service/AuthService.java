@@ -42,7 +42,6 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // ✅ JWT 생성
         String token = jwtTokenProvider.createToken(user.getUserId());
         System.out.println("🔑 생성된 JWT: " + token);
 
