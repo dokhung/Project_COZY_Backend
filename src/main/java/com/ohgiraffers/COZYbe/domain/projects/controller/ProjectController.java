@@ -76,7 +76,7 @@ public class ProjectController {
             return ResponseEntity.ok(Map.of(
                     "projectId", project.getProjectId(),
                     "projectName", project.getProjectName(),
-                    "interest", project.getInterest(),
+//                    "interest", project.getInterest(),
                     "createdAt", project.getCreatedAt()
             ));
         } else {

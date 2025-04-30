@@ -39,7 +39,7 @@ public class ProjectService {
         Project project = Project.builder()
                 .projectName(dto.getProjectName())
                 .owner(user)
-                .interest(dto.getInterest()) // 관심사 추가
+                .interest(dto.getInterest())
                 .build();
 
         return projectRepository.save(project);
