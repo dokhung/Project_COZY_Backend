@@ -40,7 +40,7 @@ public class ProjectController {
         }
         String email = jwtTokenProvider.decodeUserIdFromJwt(token);
 
-        Project project = projectService.createProject(dto, email); // 🔥 반환된 엔티티 사용
+        Project project = projectService.createProject(dto, email);
         return ResponseEntity.ok(Map.of(
                 "projectId", project.getProjectId(),
                 "projectName", project.getProjectName()
@@ -63,7 +63,7 @@ public class ProjectController {
                     "createdAt", project.getCreatedAt()
             ));
         }else {
-            return ResponseEntity.ok(Map.of("message", "Project not found"));
+            return ResponseEntity.ok(Map.of("message", "프로젝트를 찾을 수 없음"));
         }
     }
 
