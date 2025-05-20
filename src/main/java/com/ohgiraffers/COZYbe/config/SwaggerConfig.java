@@ -13,19 +13,17 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        // SecurityScheme 설정
         SecurityScheme securityScheme = new SecurityScheme()
                 .name("Authorization")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
 
-        // SecurityRequirement 설정
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("Authorization");
 
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("Authorization", securityScheme))
                 .addSecurityItem(securityRequirement)
-                .info(new Info().title("CollaboProject_API").version("1.0.0"));
+                .info(new Info().title("Project_COZY_Server_API").version("1.0.0"));
     }
 }

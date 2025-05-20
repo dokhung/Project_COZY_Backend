@@ -34,7 +34,7 @@ public class ProjectService {
     //TODO:프로젝트 등록
     public Project createProject(CreateProjectInterestDTO dto, String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException(email));
 
         Project project = Project.builder()
                 .projectName(dto.getProjectName())
@@ -45,7 +45,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    //TODO: ProjectInfo
+    //TODO: 프로젝트정보
     public Optional<Project> getProjectByUserEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -54,5 +54,9 @@ public class ProjectService {
 
     public Optional<Project> getProjectByName(String projectName) {
         return projectRepository.findByProjectName(projectName);
+    }
+
+    public Optional<Project> getProjectById(Long projectId) {
+        return projectRepository.findById(projectId);
     }
 }
