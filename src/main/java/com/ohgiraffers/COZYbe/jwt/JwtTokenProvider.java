@@ -109,4 +109,8 @@ public class JwtTokenProvider {
     public boolean isTokenValid(String token) {
         return !invalidatedTokens.contains(token);
     }
+
+    public Long getValidTime() {
+        return expiration;
+    }
 }

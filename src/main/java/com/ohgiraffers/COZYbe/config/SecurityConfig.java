@@ -6,6 +6,7 @@ import com.ohgiraffers.COZYbe.jwt.JwtWhiteListHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -41,8 +42,11 @@ public class SecurityConfig {
                         .requestMatchers(whiteListHolder.getWhiteList()).permitAll()  // ✅ `/api/auth/**` 허용됨
                         .anyRequest().authenticated() // 배포시 활성화 필요
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 필터를 DI 받아서 사용
+                .oauth2ResourceServer(oauth2-> oauth2
+                        .jwt(Customizer.withDefaults())
+                );
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 필터를 DI 받아서 사용
 
         return http.build();
     }

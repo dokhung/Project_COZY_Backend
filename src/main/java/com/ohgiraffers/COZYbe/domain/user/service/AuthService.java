@@ -1,5 +1,9 @@
 package com.ohgiraffers.COZYbe.domain.user.service;
 
+import com.ohgiraffers.COZYbe.common.error.ApplicationException;
+import com.ohgiraffers.COZYbe.common.error.ErrorCode;
+import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
+import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
@@ -16,24 +20,22 @@ import java.util.Set;
 @Service
 public class AuthService {
 
-    private UserRepository userRepository;
+    private UserService userService;
     private JwtTokenProvider jwtTokenProvider;
     private PasswordEncoder passwordEncoder;
 
-    // TODO : 로그인
-    public Map<String, Object> login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
 
-        // TODO : 비밀번호 일치 하지 않다면 실행됨
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    public AuthTokenDTO login(LoginDTO dto) {
+        User user = userService.findUserByEmail(dto.getEmail());
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
         String token = jwtTokenProvider.createToken(user.getUserId());
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("user", user);
-        return response;
+        return new AuthTokenDTO(
+                token,
+                jwtTokenProvider.getValidTime()
+        );
     }
 
 

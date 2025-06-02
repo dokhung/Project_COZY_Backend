@@ -2,7 +2,6 @@ package com.ohgiraffers.COZYbe.domain.user.controller;
 
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
-import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,19 +20,8 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         System.out.println("🔍 로그인 요청: " + loginDTO.getEmail());
 
-        try {
-            Map<String, Object> loginResponse = authService.login(loginDTO.getEmail(), loginDTO.getPassword());
-            String token = (String) loginResponse.get("token");
+        return ResponseEntity.ok().body(authService.login(loginDTO));
 
-            if (token == null || token.isEmpty()) {
-                return ResponseEntity.status(500).body(Map.of("error", "토큰 생성 실패"));
-            }
-
-            System.out.println("✅ 로그인 성공 - 반환 토큰: " + token);
-            return ResponseEntity.ok().body(Map.of("token", token, "user", loginResponse.get("user")));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
-        }
     }
 
     @PostMapping("/logout")

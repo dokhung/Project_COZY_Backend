@@ -1,5 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.user.service;
 
+import com.ohgiraffers.COZYbe.common.error.ApplicationException;
+import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
@@ -115,5 +117,9 @@ public class UserService {
     }
 
 
+    public User findUserByEmail(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+    }
 
 }

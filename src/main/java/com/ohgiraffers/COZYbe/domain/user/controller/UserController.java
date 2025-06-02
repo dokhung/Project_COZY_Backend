@@ -1,7 +1,6 @@
 package com.ohgiraffers.COZYbe.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
