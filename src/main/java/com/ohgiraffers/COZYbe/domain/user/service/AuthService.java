@@ -1,20 +1,12 @@
 package com.ohgiraffers.COZYbe.domain.user.service;
 
-import com.ohgiraffers.COZYbe.common.error.ApplicationException;
-import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -22,18 +14,12 @@ public class AuthService {
 
     private UserService userService;
     private JwtTokenProvider jwtTokenProvider;
-    private PasswordEncoder passwordEncoder;
 
 
-    public AuthTokenDTO login(LoginDTO dto) {
-        User user = userService.findUserByEmail(dto.getEmail());
-
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
-        }
-        String token = jwtTokenProvider.createToken(user.getUserId());
+    public AuthTokenDTO login(LoginDTO loginDTO) {
+        UUID userId = userService.verifyUser(loginDTO);
         return new AuthTokenDTO(
-                token,
+                jwtTokenProvider.createToken(userId),
                 jwtTokenProvider.getValidTime()
         );
     }

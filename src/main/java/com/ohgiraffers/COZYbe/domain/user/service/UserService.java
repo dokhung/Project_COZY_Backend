@@ -2,13 +2,12 @@ package com.ohgiraffers.COZYbe.domain.user.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
+import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
-import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,9 +116,17 @@ public class UserService {
     }
 
 
-    public User findUserByEmail(String email){
+    private User findUserByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+    }
+
+    public UUID verifyUser(LoginDTO dto){
+        User user = this.findUserByEmail(dto.getEmail());
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+        }
+        return user.getUserId();
     }
 
 }
