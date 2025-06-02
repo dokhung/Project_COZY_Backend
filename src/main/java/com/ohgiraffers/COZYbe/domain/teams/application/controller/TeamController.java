@@ -7,10 +7,7 @@ import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamService;
 import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,4 +33,25 @@ public class TeamController {
 
         return teamService.createTeam();
     }
+
+    @GetMapping
+    public void getTeam(){
+
+    }
+
+    @DeleteMapping
+    public void deleteTeam(){
+
+    }
+
+    @PatchMapping
+    public void updateTeam(){
+
+    }
+
+    @GetMapping("/search")
+    public void findTeamByName(){
+
+    }
+
 }

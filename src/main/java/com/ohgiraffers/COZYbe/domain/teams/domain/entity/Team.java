@@ -1,6 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.teams.domain.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
+import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@ToString
 @Entity
 public class Team extends BaseTimeEntity {
 
@@ -23,5 +23,9 @@ public class Team extends BaseTimeEntity {
 
     @Column(length = 2000)
     private String description;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User leader;
 
 }

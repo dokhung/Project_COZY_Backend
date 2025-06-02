@@ -17,10 +17,6 @@ public class Member extends ImmutableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private MemberRole role;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
