@@ -5,8 +5,8 @@ import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ohgiraffers.COZYbe.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,12 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class UserController {
 
-    @Autowired
-    private AuthService authService;
+
+    private UserService userService;
 
 
     @GetMapping("/current-user")
@@ -30,8 +31,8 @@ public class AuthController {
 
         try {
             String jwt = token.substring(7);
-            String email = authService.getEmailFromToken(jwt);
-            User user = authService.getUserInfo(email);
+            String userId = userService.getUserIdFromToken(jwt);
+            User user = userService.getUserInfo(userId);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,7 +45,7 @@ public class AuthController {
     // 🔹 이메일 중복 확인
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
-        boolean isAvailable = authService.isEmailAvailable(email);
+        boolean isAvailable = userService.isEmailAvailable(email);
         return ResponseEntity.ok(Map.of("available", isAvailable));
     }
 
@@ -57,9 +58,9 @@ public class AuthController {
         System.out.println("🔍 받은 인증 토큰: " + token);
 
 
-        String userEmail;
+        String userId;
         try {
-            userEmail = authService.getEmailFromToken(token.substring(7)); // "Bearer " 제거 후 이메일 추출
+            userId = userService.getUserIdFromToken(token.substring(7)); // "Bearer " 제거 후 이메일 추출
         } catch (Exception e) {
             return ResponseEntity.status(400).body(Map.of("error", "유효하지 않은 토큰입니다."));
         }
@@ -72,7 +73,7 @@ public class AuthController {
         }
 
         try {
-            boolean isValid = authService.verifyPassword(userEmail, inputPassword);
+            boolean isValid = userService.verifyPassword(userId, inputPassword);
 
             if (isValid) {
                 System.out.println("✅ 비밀번호 확인 성공");
@@ -98,10 +99,10 @@ public class AuthController {
         }
 
         try {
-            String email = authService.getEmailFromToken(token.substring(7));
+            String userId = userService.getUserIdFromToken(token.substring(7));
 
             UserUpdateDTO userUpdateDTO = new UserUpdateDTO(nickname, statusMessage);
-            User updatedUser = authService.updateUserInfo(email, userUpdateDTO, profileImage);
+            User updatedUser = userService.updateUserInfo(userId, userUpdateDTO, profileImage);
 
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
@@ -123,7 +124,7 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("error", "비밀번호가 일치하지 않습니다."));
             }
 
-            User user = authService.register(signUpDTO, profileImage);
+            User user = userService.register(signUpDTO, profileImage);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "회원가입 중 오류 발생: " + e.getMessage()));
@@ -135,7 +136,7 @@ public class AuthController {
         System.out.println("🔍 로그인 요청: " + loginDTO.getEmail());
 
         try {
-            Map<String, Object> loginResponse = authService.login(loginDTO.getEmail(), loginDTO.getPassword());
+            Map<String, Object> loginResponse = userService.login(loginDTO.getEmail(), loginDTO.getPassword());
             String token = (String) loginResponse.get("token");
 
             if (token == null || token.isEmpty()) {
@@ -157,8 +158,8 @@ public class AuthController {
 
         try {
             String jwtToken = token.substring(7);
-            String email = authService.getEmailFromToken(jwtToken);
-            authService.invalidateToken(jwtToken);
+//            String email = userService.getUserIdFromToken(jwtToken);
+            userService.invalidateToken(jwtToken);
             return ResponseEntity.ok(Map.of("message", "로그아웃 성공"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "로그아웃 중 오류 발생: " + e.getMessage()));

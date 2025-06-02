@@ -6,8 +6,6 @@ import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Service
-public class AuthService {
+public class UserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -90,9 +88,9 @@ public class AuthService {
     }
 
 
-    public User getUserInfo(String token) {
-        String userEmail = jwtTokenProvider.decodeUserIdFromJwt(token);
-        return userRepository.findByEmail(userEmail)
+    public User getUserInfo(String userId) {
+//        String userEmail = jwtTokenProvider.decodeUserIdFromJwt(userId);
+        return userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
@@ -101,8 +99,8 @@ public class AuthService {
         return userRepository.findByEmail(email).isEmpty();
     }
 
-    public boolean verifyPassword(String email, String inputPassword) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+    public boolean verifyPassword(String userId, String inputPassword) {
+        Optional<User> userOptional = userRepository.findById(UUID.fromString(userId));
 
         if (userOptional.isEmpty()) {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
@@ -114,8 +112,8 @@ public class AuthService {
         return true;
     }
 
-    public User updateUserInfo(String email, UserUpdateDTO userUpdateDTO, MultipartFile profileImage) throws IOException {
-        User user = userRepository.findByEmail(email)
+    public User updateUserInfo(String userId, UserUpdateDTO userUpdateDTO, MultipartFile profileImage) throws IOException {
+        User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
 
         user.setNickname(userUpdateDTO.getNickname());
@@ -137,7 +135,7 @@ public class AuthService {
     }
 
 
-    public String getEmailFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         return jwtTokenProvider.decodeUserIdFromJwt(token);
     }
 
