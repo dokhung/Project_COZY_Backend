@@ -45,6 +45,7 @@ public class JwtTokenProvider {
      * */
     public String createToken(UUID userId) {
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .issuer("COZY")
                 .subject(userId.toString())
                 .audience().add("COZY CLIENT").and()
