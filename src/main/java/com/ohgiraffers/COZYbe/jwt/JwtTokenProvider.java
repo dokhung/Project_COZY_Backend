@@ -61,21 +61,18 @@ public class JwtTokenProvider {
         if (token == null || token.trim().isEmpty()) {
             log.error("Token is Empty");
             throw new ApplicationException(ErrorCode.INVALID_TOKEN);
-//            System.out.println("❌ [JWT] 토큰이 비어있음");
 //            return null;
         }
 
         try {
-            Claims claims = Jwts.parser()           // ✅ parserBuilder → parser
-                    .verifyWith((SecretKey) key)               // ✅ setSigningKey → verifyWith
+            Claims claims = Jwts.parser()
+                    .verifyWith((SecretKey) key)
                     .build()
-                    .parseSignedClaims(token)      // ✅ parseClaimsJws → parseSignedClaims
+                    .parseSignedClaims(token)
                     .getPayload();
 
             return claims.getSubject();
         } catch (Exception e) {
-//            System.out.println("❌ [JWT 파싱 오류] " + e.getMessage());
-//            return null;
             log.error(e.getMessage());
             throw new ApplicationException(ErrorCode.INVALID_TOKEN);
         }

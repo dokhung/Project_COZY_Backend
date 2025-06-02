@@ -34,22 +34,29 @@ public class ProjectService {
     //TODO:프로젝트 등록
     public Project createProject(CreateProjectInterestDTO dto, String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException(email));
 
         Project project = Project.builder()
                 .projectName(dto.getProjectName())
                 .owner(user)
-                .interest(dto.getInterest()) // 관심사 추가
+                .interest(dto.getInterest())
                 .build();
 
-        return projectRepository.save(project); // ✅ 저장 후 바로 리턴
+        return projectRepository.save(project);
     }
 
-    //TODO: ProjectInfo
+    //TODO: 프로젝트정보
     public Optional<Project> getProjectByUserEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         return projectRepository.findFirstByOwner(user);
     }
 
+    public Optional<Project> getProjectByName(String projectName) {
+        return projectRepository.findByProjectName(projectName);
+    }
+
+    public Optional<Project> getProjectById(Long projectId) {
+        return projectRepository.findById(projectId);
+    }
 }
