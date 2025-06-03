@@ -1,5 +1,6 @@
 package com.ohgiraffers.COZYbe.domain.user.controller;
 
+import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
 import com.ohgiraffers.COZYbe.domain.user.service.BlocklistService;
@@ -9,23 +10,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private AuthService authService;
-    private BlocklistService blocklistService;
+    private final AuthService authService;
+    private final BlocklistService blocklistService;
 
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         System.out.println("🔍 로그인 요청: " + loginDTO.getEmail());
 
-        return ResponseEntity.ok().body(authService.login(loginDTO));
-
+        AuthTokenDTO authTokenDTO = authService.login(loginDTO);
+        return ResponseEntity.ok().body(authTokenDTO);
     }
 
 //    @PostMapping("/logout")

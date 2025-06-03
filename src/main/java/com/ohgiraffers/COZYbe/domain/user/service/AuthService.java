@@ -12,8 +12,8 @@ import java.util.*;
 @Service
 public class AuthService {
 
-    private UserService userService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     public AuthTokenDTO login(LoginDTO loginDTO) {
@@ -31,17 +31,17 @@ public class AuthService {
     }
 
 
-    private Set<String> invalidatedTokens = new HashSet<>();
-
-    public void invalidateToken(String token) {
-        invalidatedTokens.add(token);
-        System.out.println("🚀 [토큰 무효화] 저장된 무효화된 토큰 개수: " + invalidatedTokens.size());
-    }
-
-    public boolean isTokenValid(String token) {
-        boolean isValid = !invalidatedTokens.contains(token);
-        return isValid;
-    }
+//    private Set<String> invalidatedTokens = new HashSet<>();
+//
+//    public void invalidateToken(String token) {
+//        invalidatedTokens.add(token);
+//        System.out.println("🚀 [토큰 무효화] 저장된 무효화된 토큰 개수: " + invalidatedTokens.size());
+//    }
+//
+//    public boolean isTokenValid(String token) {
+//        boolean isValid = !invalidatedTokens.contains(token);
+//        return isValid;
+//    }
 
 
 }

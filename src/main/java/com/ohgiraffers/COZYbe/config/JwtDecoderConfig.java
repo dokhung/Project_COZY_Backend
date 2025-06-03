@@ -15,9 +15,12 @@ public class JwtDecoderConfig {
 
     private final SecretKey secretKey;
 
-    public JwtDecoderConfig(@Value("${jwt.secret}") String secret) {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+//    public JwtDecoderConfig(@Value("${jwt.secret}") String secret) {
+//        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+//    }
+
+    public JwtDecoderConfig(SecretKey jwtHmacKey){
+        this.secretKey = jwtHmacKey;
     }
 
     @Bean

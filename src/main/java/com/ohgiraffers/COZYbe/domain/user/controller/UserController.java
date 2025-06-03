@@ -2,29 +2,35 @@ package com.ohgiraffers.COZYbe.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
+import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
 import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
-    private UserService userService;
-    private AuthService authService;
+    private final UserService userService;
+    private final AuthService authService;
 
 
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
+        log.info(token);
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 필요합니다."));
         }
@@ -32,8 +38,8 @@ public class UserController {
         try {
             String jwt = token.substring(7);
             String userId = authService.getUserIdFromToken(jwt);
-            User user = userService.getUserInfo(userId);
-            return ResponseEntity.ok(user);
+            UserInfoDTO userInfoDTO = userService.getUserInfo(userId);
+            return ResponseEntity.ok(userInfoDTO);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", "사용자 조회 실패: " + e.getMessage()));
@@ -129,6 +135,18 @@ public class UserController {
         }
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody SignUpDTO signUpDTO){
+        UserInfoDTO userInfoDTO = userService.registerDefault(signUpDTO);
+        return ResponseEntity.ok(userInfoDTO);
+    }
 
+
+    @GetMapping("/check-current")
+    public ResponseEntity<?> checkCurrentUser(@AuthenticationPrincipal Jwt jwt){
+        String sub = jwt.getSubject();
+        UserInfoDTO userInfoDTO = userService.getUserInfo(sub);
+        return ResponseEntity.ok(userInfoDTO);
+    }
 
 }

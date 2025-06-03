@@ -4,7 +4,10 @@ import com.ohgiraffers.COZYbe.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import com.ohgiraffers.COZYbe.jwt.JwtWhiteListHolder;
 import com.ohgiraffers.COZYbe.jwt.TokenBlocklistFilter;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -20,13 +23,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.crypto.SecretKey;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+//    private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
     private final JwtWhiteListHolder whiteListHolder;
     private final TokenBlocklistFilter tokenBlocklistFilter;
@@ -50,7 +54,7 @@ public class SecurityConfig {
                         .jwt(Customizer.withDefaults())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 🔥 필터를 DI 받아서 사용
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 🔥 필터를 DI 받아서 사용
                 .addFilterAfter(tokenBlocklistFilter, SecurityContextHolderFilter.class);
         return http.build();
     }
@@ -68,5 +72,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+
 
 }

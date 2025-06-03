@@ -20,12 +20,14 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider {
 
-    private final Key key;
+    private final SecretKey key;
     private final long expiration;
     private final Set<String> invalidatedTokens = new HashSet<>(); // 🚀 로그아웃된 토큰 저장
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    public JwtTokenProvider(SecretKey jwtHmacKey, @Value("${jwt.expiration}") long expiration) {
+//    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+//        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = jwtHmacKey;
         this.expiration = expiration;
     }
 

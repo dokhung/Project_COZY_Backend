@@ -4,6 +4,7 @@ import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
+import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
@@ -23,8 +24,8 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String UPLOAD_DIR = "uploads/profile_images/";
     private static final String SERVER_URL = "http://localhost:8080/";
@@ -46,6 +47,32 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+
+    public UserInfoDTO registerDefault(SignUpDTO signUpDTO) {
+        String profileImageUrl = UPLOAD_DIR + "Default_Profile.png";
+        if (!isEmailAvailable(signUpDTO.getEmail())){
+            throw new ApplicationException(ErrorCode.INVALID_EMAIL);
+        };
+
+        User user = User.builder()
+                .email(signUpDTO.getEmail())
+                .nickname(signUpDTO.getNickname())
+                .password(passwordEncoder.encode(signUpDTO.getPassword()))
+                .profileImageUrl(profileImageUrl)
+                .statusMessage(signUpDTO.getStatusMessage())
+                .build();
+
+        User registered = userRepository.save(user);
+        return new UserInfoDTO(
+                registered.getEmail(),
+                registered.getNickname(),
+                registered.getProfileImageUrl(),
+                registered.getStatusMessage()
+        );
+    }
+
+
 
     // TODO : 프로필 이미지 저장
     private String saveProfileImage(MultipartFile file) throws IOException {
@@ -69,10 +96,16 @@ public class UserService {
     }
 
 
-    public User getUserInfo(String userId) {
+    public UserInfoDTO getUserInfo(String userId) {
 //        String userEmail = jwtTokenProvider.decodeUserIdFromJwt(userId);
-        return userRepository.findById(UUID.fromString(userId))
+        User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return new UserInfoDTO(
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImageUrl(),
+                user.getStatusMessage()
+        );
     }
 
     // 🔹 이메일 중복 확인
@@ -128,5 +161,4 @@ public class UserService {
         }
         return user.getUserId();
     }
-
 }
