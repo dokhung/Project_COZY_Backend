@@ -1,6 +1,6 @@
 package com.ohgiraffers.COZYbe.config;
 
-import com.ohgiraffers.COZYbe.jwt.JwtAuthenticationFilter;
+
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import com.ohgiraffers.COZYbe.jwt.JwtWhiteListHolder;
 import com.ohgiraffers.COZYbe.jwt.TokenBlocklistFilter;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
 //    private final JwtTokenProvider jwtTokenProvider;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
     private final JwtWhiteListHolder whiteListHolder;
     private final TokenBlocklistFilter tokenBlocklistFilter;
 
