@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RestController("/member")
+@RestController
+@RequestMapping("/member")
 public class MemberController {
 
     private MemberService memberService;
