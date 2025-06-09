@@ -1,11 +1,16 @@
 package com.ohgiraffers.COZYbe.config;
 
-import com.ohgiraffers.COZYbe.jwt.JwtAuthenticationFilter;
+
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import com.ohgiraffers.COZYbe.jwt.JwtWhiteListHolder;
+import com.ohgiraffers.COZYbe.jwt.TokenBlocklistFilter;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,18 +18,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import javax.crypto.SecretKey;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
+//    private final JwtTokenProvider jwtTokenProvider;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
     private final JwtWhiteListHolder whiteListHolder;
+    private final TokenBlocklistFilter tokenBlocklistFilter;
 
     // 🔹 비밀번호 암호화 설정
     @Bean
@@ -41,9 +50,12 @@ public class SecurityConfig {
                         .requestMatchers(whiteListHolder.getWhiteList()).permitAll()  // ✅ `/api/auth/**` 허용됨
                         .anyRequest().authenticated() // 배포시 활성화 필요
                 )
+                .oauth2ResourceServer(oauth2-> oauth2
+                        .jwt(Customizer.withDefaults())
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 필터를 DI 받아서 사용
-
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 🔥 필터를 DI 받아서 사용
+                .addFilterAfter(tokenBlocklistFilter, SecurityContextHolderFilter.class);
         return http.build();
     }
 
@@ -60,4 +72,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+
+
 }
