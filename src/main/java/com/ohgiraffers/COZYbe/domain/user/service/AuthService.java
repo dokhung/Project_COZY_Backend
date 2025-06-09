@@ -3,7 +3,9 @@ package com.ohgiraffers.COZYbe.domain.user.service;
 import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +33,7 @@ public class AuthService {
     }
 
 
+
 //    private Set<String> invalidatedTokens = new HashSet<>();
 //
 //    public void invalidateToken(String token) {
@@ -42,6 +45,7 @@ public class AuthService {
 //        boolean isValid = !invalidatedTokens.contains(token);
 //        return isValid;
 //    }
+
 
 
 }
