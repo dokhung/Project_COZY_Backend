@@ -114,12 +114,8 @@ public class UserService {
     }
 
     public boolean verifyPassword(String userId, String inputPassword) {
-        Optional<User> userOptional = userRepository.findById(UUID.fromString(userId));
+        User user = this.findById(userId);
 
-        if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
-        }
-        User user = userOptional.get();
         if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
@@ -127,8 +123,7 @@ public class UserService {
     }
 
     public User updateUserInfo(String userId, UserUpdateDTO userUpdateDTO, MultipartFile profileImage) throws IOException {
-        User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+        User user = this.findById(userId);
 
         user.setNickname(userUpdateDTO.getNickname());
         user.setStatusMessage(userUpdateDTO.getStatusMessage());
@@ -148,12 +143,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
-    private User findUserByEmail(String email){
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
-    }
-
     public UUID verifyUser(LoginDTO dto){
         User user = this.findUserByEmail(dto.getEmail());
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
@@ -161,4 +150,24 @@ public class UserService {
         }
         return user.getUserId();
     }
+
+    public String getUserEmailById(String userId){
+        return this.findById(userId).getEmail();
+    }
+
+
+    private User findUserByEmail(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+    }
+
+    public User findById(String userId){
+        return userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+    }
+
+    public Boolean isUserExist(String userId){
+        return userRepository.existsById(UUID.fromString(userId));
+    }
+
 }

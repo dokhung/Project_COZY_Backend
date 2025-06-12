@@ -1,22 +1,28 @@
 package com.ohgiraffers.COZYbe.domain.teams.application.controller;
 
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.TeamIdDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamService;
-import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
-@RestController("/team")
+@RestController
+@RequestMapping("/team")
 public class TeamController {
 
     private final TeamService teamService;
-    private final AuthService authService;
 
     @GetMapping("/list")
     public List<TeamNameDTO> getTeamList(){
@@ -24,33 +30,40 @@ public class TeamController {
     }
 
     @PostMapping
-    public TeamDetailDTO createTeam(@RequestBody CreateTeamDTO createTeamDTO, HttpServletRequest request){
-
-        String token = authService.trimToken(request);
-        String email = authService.getEmailFromToken(token);
-
-        System.out.println(createTeamDTO);
-
-        return teamService.createTeam();
+    public ResponseEntity<?> createTeam(@RequestBody CreateTeamDTO createTeamDTO,
+                                     @AuthenticationPrincipal Jwt jwt){
+        TeamDetailDTO detailDTO = teamService.createTeam(createTeamDTO, jwt.getSubject());
+        return ResponseEntity.ok(detailDTO);
     }
 
     @GetMapping
-    public void getTeam(){
-
-    }
-
-    @DeleteMapping
-    public void deleteTeam(){
-
+    public ResponseEntity<?> getTeam(@RequestBody TeamIdDTO teamIdDTO,
+                        @AuthenticationPrincipal Jwt jwt){
+        TeamDetailDTO detailDTO = teamService.getTeamDetail(teamIdDTO, jwt.getSubject());
+        return ResponseEntity.ok(detailDTO);
     }
 
     @PatchMapping
-    public void updateTeam(){
+    public ResponseEntity<?> updateTeam(@RequestBody UpdateTeamDTO updateDTO,
+                                                    @AuthenticationPrincipal Jwt jwt){
+        TeamDetailDTO detailDTO = teamService.updateTeam(updateDTO, jwt.getSubject());
+        return ResponseEntity.ok(detailDTO);
+    }
 
+    @DeleteMapping
+    public ResponseEntity<?>  deleteTeam(@RequestBody TeamIdDTO teamIdDTO,
+                           @AuthenticationPrincipal Jwt jwt){
+        teamService.deleteTeam(teamIdDTO, jwt.getSubject());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
     public void findTeamByName(){
+
+    }
+
+    @GetMapping("/my-team")
+    public void findMyTeam(@AuthenticationPrincipal Jwt jwt){
 
     }
 
