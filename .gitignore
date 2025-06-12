@@ -41,3 +41,4 @@ out/
 
 # JetBrains IDE (WebStorm, IntelliJ, etc.)
 .idea/
+/src/main/generated/

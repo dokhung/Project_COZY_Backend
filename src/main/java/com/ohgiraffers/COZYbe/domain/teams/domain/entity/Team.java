@@ -24,7 +24,7 @@ public class Team extends BaseTimeEntity {
     @Column(length = 2000)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User leader;
 
