@@ -1,12 +1,11 @@
 package com.ohgiraffers.COZYbe.domain.teams.application.controller;
 
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
-import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.TeamIdDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamService;
-import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Slf4j
@@ -37,9 +37,9 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTeam(@RequestBody TeamIdDTO teamIdDTO,
+    public ResponseEntity<?> getTeam(@RequestParam String teamId,
                         @AuthenticationPrincipal Jwt jwt){
-        TeamDetailDTO detailDTO = teamService.getTeamDetail(teamIdDTO, jwt.getSubject());
+        TeamDetailDTO detailDTO = teamService.getTeamDetail(teamId, jwt.getSubject());
         return ResponseEntity.ok(detailDTO);
     }
 
@@ -51,20 +51,22 @@ public class TeamController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?>  deleteTeam(@RequestBody TeamIdDTO teamIdDTO,
+    public ResponseEntity<?>  deleteTeam(@RequestParam String teamId,
                            @AuthenticationPrincipal Jwt jwt){
-        teamService.deleteTeam(teamIdDTO, jwt.getSubject());
+        teamService.deleteTeam(teamId, jwt.getSubject());
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
-    public void findTeamByName(){
-
+    public ResponseEntity<?> findTeamByName(@RequestParam String searchKeyword, Pageable pageable){
+        SearchResultDTO resultDTO = teamService.searchTeamByKeyword(searchKeyword, pageable);
+        return ResponseEntity.ok(resultDTO);
     }
 
     @GetMapping("/my-team")
-    public void findMyTeam(@AuthenticationPrincipal Jwt jwt){
-
+    public ResponseEntity<?> findMyTeam(@AuthenticationPrincipal Jwt jwt){
+        SearchResultDTO resultDTO = teamService.searchTeamByUser(jwt.getSubject());
+        return ResponseEntity.ok(resultDTO);
     }
 
 }

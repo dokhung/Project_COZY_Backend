@@ -7,6 +7,7 @@ import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface TeamMapper {
 
     @Mapping(source = "leader.nickname", target = "leaderName")
     TeamDetailDTO entityToDetail(Team team);
+
+    List<TeamNameDTO> teamListToDto(List<Team> teamList);
 }

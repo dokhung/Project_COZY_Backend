@@ -3,8 +3,8 @@ package com.ohgiraffers.COZYbe.domain.teams.application.service;
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
-import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.TeamIdDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
@@ -12,9 +12,9 @@ import com.ohgiraffers.COZYbe.domain.teams.domain.repository.TeamRepository;
 import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,10 +52,10 @@ public class TeamService {
                 .orElseThrow(()->new ApplicationException(ErrorCode.NO_SUCH_TEAM));
     }
 
-    public TeamDetailDTO getTeamDetail(TeamIdDTO teamIdDTO, String userId) {
+    public TeamDetailDTO getTeamDetail(String teamId, String userId) {
         verifyUser(userId);
 
-        Team team= repository.findById(UUID.fromString(teamIdDTO.teamId()))
+        Team team= repository.findById(UUID.fromString(teamId))
                 .orElseThrow(()-> new ApplicationException(ErrorCode.NO_SUCH_TEAM));
         return mapper.entityToDetail(team);
     }
@@ -91,11 +91,24 @@ public class TeamService {
         return mapper.entityToDetail(updated);
     }
 
-    public void deleteTeam(TeamIdDTO teamIdDTO, String userId) {
-        Team team = getIfLeader(teamIdDTO.teamId(), userId);
+    public void deleteTeam(String teamId, String userId) {
+        Team team = getIfLeader(teamId, userId);
         repository.delete(team);
     }
 
+
+    //Todo: Elastic Search 로 변경
+    public SearchResultDTO searchTeamByKeyword(String searchKeyword, Pageable pageable) {
+        List<Team> teamList= repository.findByTeamNameContainingIgnoreCase(searchKeyword);
+        List<TeamNameDTO> dtoList = mapper.teamListToDto(teamList);
+        return new SearchResultDTO(dtoList);
+    }
+
+    public SearchResultDTO searchTeamByUser(String userId) {
+        List<Team> teamList = repository.findByLeaderUserId(UUID.fromString(userId));
+        List<TeamNameDTO> dtoList = mapper.teamListToDto(teamList);
+        return new SearchResultDTO(dtoList);
+    }
 
 
     ///*********** Verifier ***********///
@@ -122,7 +135,5 @@ public class TeamService {
         }
         throw new ApplicationException(ErrorCode.NOT_ALLOWED);
     }
-
-
 }
 
