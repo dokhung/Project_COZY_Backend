@@ -26,7 +26,7 @@ public class Project extends BaseTimeEntity {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    //TODO:관심사
+    //TODO : 개발종류
     @Column(nullable = false)
     private String interest;
 }

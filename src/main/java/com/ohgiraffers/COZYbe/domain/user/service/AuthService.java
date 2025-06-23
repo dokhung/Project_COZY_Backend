@@ -20,6 +20,7 @@ public class AuthService {
 
     public AuthTokenDTO login(LoginDTO loginDTO) {
         UUID userId = userService.verifyUser(loginDTO);
+        System.out.println("userId :: " + userId);
         return new AuthTokenDTO(
                 jwtTokenProvider.createToken(userId),
                 jwtTokenProvider.getValidTime()
@@ -31,21 +32,4 @@ public class AuthService {
     public String getUserIdFromToken(String token) {
         return jwtTokenProvider.decodeUserIdFromJwt(token);
     }
-
-
-
-//    private Set<String> invalidatedTokens = new HashSet<>();
-//
-//    public void invalidateToken(String token) {
-//        invalidatedTokens.add(token);
-//        System.out.println("🚀 [토큰 무효화] 저장된 무효화된 토큰 개수: " + invalidatedTokens.size());
-//    }
-//
-//    public boolean isTokenValid(String token) {
-//        boolean isValid = !invalidatedTokens.contains(token);
-//        return isValid;
-//    }
-
-
-
 }

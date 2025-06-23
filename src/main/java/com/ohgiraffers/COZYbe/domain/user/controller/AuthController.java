@@ -22,26 +22,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-        System.out.println("🔍 로그인 요청: " + loginDTO.getEmail());
-
+        System.out.println("loginDTO : " + loginDTO);
         AuthTokenDTO authTokenDTO = authService.login(loginDTO);
         return ResponseEntity.ok().body(authTokenDTO);
     }
 
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
-//        if (token == null || !token.startsWith("Bearer ")) {
-//            return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 필요합니다."));
-//        }
-//
-//        try {
-//            String jwtToken = token.substring(7);
-//            authService.invalidateToken(jwtToken);
-//            return ResponseEntity.ok(Map.of("message", "로그아웃 성공"));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(Map.of("error", "로그아웃 중 오류 발생: " + e.getMessage()));
-//        }
-//    }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal Jwt jwt) {
@@ -49,6 +34,7 @@ public class AuthController {
 
         long ttl  = jwt.getExpiresAt().toEpochMilli() - System.currentTimeMillis();
         blocklistService.store(jti, ttl);
+        System.out.println("ttl :: " + ttl);
         return ResponseEntity.ok().build();
     }
 
