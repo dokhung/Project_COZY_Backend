@@ -13,8 +13,9 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TeamMapper {
 
-    List<TeamNameDTO> entityToDtoList(List<Team> teams);
+    List<TeamNameDTO> entityListToDto(List<Team> teams);
 
     @Mapping(source = "leader.nickname", target = "leaderName")
     TeamDetailDTO entityToDetail(Team team);
+
 }

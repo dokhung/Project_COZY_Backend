@@ -161,9 +161,16 @@ public class UserService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
     }
 
-    public User findById(String userId){
+    private User findById(String userId){
         return userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+    }
+
+    /**
+     * 프록시 참조만 할때, FetchType.LAZY 를 사용할때 사용
+     * */
+    public User getReference(String userId){
+        return userRepository.getReferenceById(UUID.fromString(userId));
     }
 
     public Boolean isUserExist(String userId){
