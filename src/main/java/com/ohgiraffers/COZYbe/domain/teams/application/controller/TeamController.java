@@ -6,6 +6,7 @@ import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResult
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamService;
+import jdk.jfr.Unsigned;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public class TeamController {
     private final TeamService teamService;
 
     @GetMapping("/list")
-    public List<TeamNameDTO> getTeamList(){
-        return teamService.getAllList();
+    public ResponseEntity<?> getTeamList(){
+        return ResponseEntity.ok(teamService.getAllList());
     }
 
     @PostMapping
@@ -37,8 +38,9 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTeam(@RequestParam String teamId,
+    public ResponseEntity<?> getTeam(@RequestParam(value = "team") String teamId,
                         @AuthenticationPrincipal Jwt jwt){
+        log.info("Request team detail by ID : {}", teamId);
         TeamDetailDTO detailDTO = teamService.getTeamDetail(teamId, jwt.getSubject());
         return ResponseEntity.ok(detailDTO);
     }
@@ -51,17 +53,19 @@ public class TeamController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?>  deleteTeam(@RequestParam String teamId,
+    public ResponseEntity<?>  deleteTeam(@RequestParam(value = "team") String teamId,
                            @AuthenticationPrincipal Jwt jwt){
         teamService.deleteTeam(teamId, jwt.getSubject());
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> findTeamByName(@RequestParam String searchKeyword, Pageable pageable){
-        SearchResultDTO resultDTO = teamService.searchTeamByKeyword(searchKeyword, pageable);
-        return ResponseEntity.ok(resultDTO);
-    }
+    //미완성
+//    @GetMapping("/search")
+//    public ResponseEntity<?> findTeamByName(@RequestParam(value = "search") String searchKeyword, Pageable pageable){
+//        log.info("search keyword : {}", searchKeyword);
+//        SearchResultDTO resultDTO = teamService.searchTeamByKeyword(searchKeyword, pageable);
+//        return ResponseEntity.ok(resultDTO);
+//    }
 
     @GetMapping("/my-team")
     public ResponseEntity<?> findMyTeam(@AuthenticationPrincipal Jwt jwt){

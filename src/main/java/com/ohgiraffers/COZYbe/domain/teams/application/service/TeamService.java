@@ -13,6 +13,7 @@ import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
 import java.util.List;
@@ -29,16 +30,17 @@ public class TeamService {
 
     private final UserService userService;
 
-    public List<TeamNameDTO> getAllList() {
+    public SearchResultDTO getAllList() {
         List<Team> teams = repository.findAll();
-        return mapper.entityToDtoList(teams);
+        return new SearchResultDTO(mapper.entityListToDto(teams));
     }
 
+    @Transactional
     public TeamDetailDTO createTeam(CreateTeamDTO createTeamDTO, String userId) {
         Team newTeam = Team.builder()
                 .teamName(createTeamDTO.teamName())
                 .description(createTeamDTO.description())
-                .leader(userService.findById(userId))
+                .leader(userService.getReference(userId))
                 .build();
 
         Team created = repository.save(newTeam);
@@ -97,16 +99,16 @@ public class TeamService {
     }
 
 
-    //Todo: Elastic Search 로 변경
+    //Todo later: Elastic Search 로 변경
     public SearchResultDTO searchTeamByKeyword(String searchKeyword, Pageable pageable) {
         List<Team> teamList= repository.findByTeamNameContainingIgnoreCase(searchKeyword);
-        List<TeamNameDTO> dtoList = mapper.teamListToDto(teamList);
+        List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
         return new SearchResultDTO(dtoList);
     }
 
     public SearchResultDTO searchTeamByUser(String userId) {
         List<Team> teamList = repository.findByLeaderUserId(UUID.fromString(userId));
-        List<TeamNameDTO> dtoList = mapper.teamListToDto(teamList);
+        List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
         return new SearchResultDTO(dtoList);
     }
 
