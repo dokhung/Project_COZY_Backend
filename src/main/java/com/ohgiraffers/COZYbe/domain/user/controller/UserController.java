@@ -96,7 +96,11 @@ public class UserController {
             @RequestHeader("Authorization") String token,
             @RequestParam("nickname") String nickname,
             @RequestParam("statusMessage") String statusMessage,
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) {
+        System.out.println("nickname: " + nickname);
+        System.out.println("statusMessage: " + statusMessage);
+        System.out.println("profileImage: " + (profileImage != null ? profileImage.getOriginalFilename() : "없음"));
+
 
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 없습니다."));
@@ -105,16 +109,18 @@ public class UserController {
         try {
             String userId = authService.getUserIdFromToken(token.substring(7));
 
-            UserUpdateDTO userUpdateDTO = new UserUpdateDTO(nickname, statusMessage);
-            User updatedUser = userService.updateUserInfo(userId, userUpdateDTO, profileImage);
+            UserUpdateDTO dto = new UserUpdateDTO(nickname, statusMessage);
+            User updatedUser = userService.updateUserInfo(userId, dto, profileImage);
 
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "정보 수정 중 오류 발생: " + e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "정보 수정 실패: " + e.getMessage()));
         }
     }
 
-    // 🔹 회원가입 (프로필 이미지 포함)
+
+    // 회원가입 (프로필 이미지 포함)
     @PostMapping(value = "/signup", consumes = { "multipart/form-data" })
     public ResponseEntity<?> signup(
             @RequestPart("signUpDTO") String signUpDTOJson,
