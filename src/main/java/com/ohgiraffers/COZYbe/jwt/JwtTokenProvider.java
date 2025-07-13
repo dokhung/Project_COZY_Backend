@@ -52,7 +52,21 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // ✅ 토큰에서 userId 추출
+    public String createRefreshToken(UUID userId) {
+        long refreshExpiration = expiration * 10;
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .issuer("COZY")
+                .subject(userId.toString())
+                .audience().add("COZY CLIENT").and()
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(secretKey)
+                .compact();
+
+    }
+
+
 //    @Nullable
     public String decodeUserIdFromJwt(String token) {
         if (token == null || token.trim().isEmpty()) {
@@ -75,37 +89,7 @@ public class JwtTokenProvider {
         }
     }
 
-    // ✅ 토큰 유효성 검증
-//    public boolean validateToken(String token) {
-//        if (invalidatedTokens.contains(token)) {
-////            System.out.println("❌ [JWT 프로바이더] 무효화된 토큰입니다.");
-//            log.info("무효화된 토큰");
-//            return false;
-//        }
-//        try {
-//            Jwts.parser()
-//                    .verifyWith((SecretKey) secretKey)
-//                    .build()
-//                    .parseSignedClaims(token);
-//            return true;
-//        } catch (io.jsonwebtoken.JwtException e) {
-////            System.out.println("❌ [JWT 프로바이더] JWT 검증 실패: " + e.getMessage());
-//            log.error(e.getMessage());
-//            return false;
-//        }
-//    }
-//
-//    // ✅ 로그아웃된 토큰 무효화
-//    public void invalidateToken(String token) {
-////        System.out.println("🚀 [JWT 프로바이더] 토큰 무효화 처리: " + token);
-//        log.info("토큰 무효화 처리 : {}", token);
-//        invalidatedTokens.add(token);
-//    }
-//
-//    // ✅ 로그아웃된 토큰인지 확인
-//    public boolean isTokenValid(String token) {
-//        return !invalidatedTokens.contains(token);
-//    }
+
 
     public Long getValidTime() {
         return expiration;

@@ -37,14 +37,12 @@ public class UserService {
         if (profileImage != null && !profileImage.isEmpty()) {
             profileImageUrl = saveProfileImage(profileImage);
         }
-
         User user = User.builder()
                 .email(signUpDTO.getEmail())
                 .nickname(signUpDTO.getNickname())
                 .password(passwordEncoder.encode(signUpDTO.getPassword()))
                 .profileImageUrl(profileImageUrl)
                 .build();
-
         return userRepository.save(user);
     }
 
@@ -108,7 +106,7 @@ public class UserService {
         );
     }
 
-    // 🔹 이메일 중복 확인
+    // 이메일 중복 확인
     public boolean isEmailAvailable(String email) {
         return userRepository.findByEmail(email).isEmpty();
     }
@@ -165,10 +163,6 @@ public class UserService {
         return userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
     }
-
-    /**
-     * 프록시 참조만 할때, FetchType.LAZY 를 사용할때 사용
-     * */
     public User getReference(String userId){
         return userRepository.getReferenceById(UUID.fromString(userId));
     }
