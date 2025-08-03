@@ -9,6 +9,7 @@ import com.ohgiraffers.COZYbe.domain.user.service.BlocklistService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -30,9 +31,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-        System.out.println("loginDTO : " + loginDTO);
         AuthTokenDTO authTokenDTO = authService.login(loginDTO);
-        return ResponseEntity.ok().body(authTokenDTO);
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authTokenDTO.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+        return ResponseEntity.ok()
+                .header("Set-Cookie", refreshCookie.toString())
+                .body(Map.of(
+                        "accessToken", authTokenDTO.accessToken()
+                ));
     }
 
 
@@ -48,10 +61,9 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(
-            @CookieValue(value = "refreshToken",
-            required = false) String refreshToken
+            @CookieValue(value = "refreshToken", required = false) String refreshToken
     ){
-        if(refreshToken == null || refreshToken.isEmpty()){
+        if (refreshToken == null || refreshToken.isEmpty()){
             throw new ApplicationException(ErrorCode.INVALID_TOKEN);
         }
 
@@ -59,6 +71,7 @@ public class AuthController {
         String newAccessToken = jwtTokenProvider.createToken(UUID.fromString(userId));
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
+
 
 
 }

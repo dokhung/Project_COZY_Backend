@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByProjectName(String projectName);
     Optional<Project> findFirstByOwner(User owner);
-//    Optional<Project> findByPlanList();
 }

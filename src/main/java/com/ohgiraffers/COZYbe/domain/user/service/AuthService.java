@@ -20,10 +20,13 @@ public class AuthService {
 
     public AuthTokenDTO login(LoginDTO loginDTO) {
         UUID userId = userService.verifyUser(loginDTO);
-        System.out.println("userId :: " + userId);
+
+        String accessToken = jwtTokenProvider.createToken(userId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
         return new AuthTokenDTO(
-                jwtTokenProvider.createToken(userId),
-                jwtTokenProvider.getValidTime()
+                accessToken,
+//                jwtTokenProvider.getValidTime()
+                refreshToken
         );
     }
 
