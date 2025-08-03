@@ -9,23 +9,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/inquiries")
 @RequiredArgsConstructor
+// inquiry.tsx
 public class InquiryController {
 
     private final InquiryService inquiryService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 파인드 올
+    // Get information from all inquiries.
     @GetMapping("/list")
     public List<Inquiry> getAll() {
         return inquiryService.findAll();
     }
 
-    // 만들기
+    // Create Inquiry
     @PostMapping("/create")
     public Inquiry create(@RequestBody InquiryDTO request, HttpServletRequest servletRequest) {
         String token = servletRequest.getHeader("Authorization").substring(7);

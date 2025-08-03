@@ -15,14 +15,6 @@ public class AppConfig {
     @Bean
     public SecretKey jwtHmacKey(@Value("${jwt.secret}") String secret) {
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());        //HmacSHA512 로 적용됨
-//        System.out.println(secretKey.getAlgorithm());
         return secretKey;
     }
-
-//    @Bean
-//    public JwtTokenProvider jwtTokenProvider(
-//            @Value("${jwt.secret}") String secret,
-//            @Value("${jwt.expiration}") long expiration) {
-//        return new JwtTokenProvider(secret, expiration);
-//    }
 }

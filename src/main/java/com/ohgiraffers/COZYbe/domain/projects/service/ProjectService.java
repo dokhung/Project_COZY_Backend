@@ -2,66 +2,70 @@ package com.ohgiraffers.COZYbe.domain.projects.service;
 
 import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectInterestDTO;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
+import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
-import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    //TODO:프로젝트이름 중복 확인을 트루 펄스로 보냄
-    public boolean inProjectNameAvailable(String projectName){
+    public boolean isProjectNameAvailable(String projectName) {
         return projectRepository.findByProjectName(projectName).isEmpty();
     }
 
-    //TODO:프로젝트 등록
     public Project createProject(CreateProjectInterestDTO dto, String userId) {
-        User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없다. " + userId));
-
+        User user = findUserById(userId);
 
         Project project = Project.builder()
                 .projectName(dto.getProjectName())
-                .owner(user)
                 .interest(dto.getInterest())
+                .owner(user)
                 .build();
-        projectRepository.save(project);
+
         return projectRepository.save(project);
     }
 
-    //TODO: 프로젝트정보
-    public Optional<Project> getProjectByUserId(String userId) {
-        User user = userRepository.findById(UUID.fromString(userId))
+    public Project getProjectByUserId(String userId) {
+        User user = findUserById(userId);
+        return projectRepository.findFirstByOwner(user)
+                .orElseThrow(() -> new RuntimeException("프로젝트가 없습니다."));
+    }
+
+    public Project getProjectByNameForUser(String projectName, String userId) {
+        Project project = projectRepository.findByProjectName(projectName)
+                .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
+
+        if (!project.getOwner().getUserId().toString().equals(userId)) {
+            throw new RuntimeException("본인의 프로젝트만 조회할 수 있습니다.");
+        }
+
+        return project;
+    }
+
+    private User findUserById(String userId) {
+        return userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
-        return projectRepository.findFirstByOwner(user);
     }
 
+    @Transactional
+    public void deleteProject(Long projectId, String userId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(()->new RuntimeException("Not found with id: " + projectId));
 
-    public Optional<Project> getProjectByName(String projectName) {
-        return projectRepository.findByProjectName(projectName);
-    }
+        if (!project.getOwner().getUserId().toString().equals(userId)) {
+            throw new RuntimeException("삭제의 권한이 없습니다.");
+        }
 
-    public Optional<Project> getProjectById(Long projectId) {
-        return projectRepository.findById(projectId);
+        projectRepository.delete(project);
     }
 }

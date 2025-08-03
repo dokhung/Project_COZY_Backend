@@ -30,12 +30,8 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig {
 
-//    private final JwtTokenProvider jwtTokenProvider;
-//    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 🔹 필터 주입
     private final JwtWhiteListHolder whiteListHolder;
     private final TokenBlocklistFilter tokenBlocklistFilter;
-
-    // 🔹 비밀번호 암호화 설정
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -47,26 +43,30 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(whiteListHolder.getWhiteList()).permitAll()  // ✅ `/api/auth/**` 허용됨
-                        .anyRequest().authenticated() // 배포시 활성화 필요
+                        .requestMatchers(whiteListHolder.getWhiteList()).permitAll()
+                        .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2-> oauth2
                         .jwt(Customizer.withDefaults())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 🔥 필터를 DI 받아서 사용
                 .addFilterAfter(tokenBlocklistFilter, SecurityContextHolderFilter.class);
         return http.build();
     }
 
-    // 🔹 CORS 설정 (React와 통신 허용)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // React 클라이언트 주소
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://172.30.1.98:3000"
+        ));
+        // 개발용 와일드카드 (원하면 제거 가능)
+        config.addAllowedOriginPattern("*");
+
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        config.setAllowCredentials(true); // 인증 정보 허용
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

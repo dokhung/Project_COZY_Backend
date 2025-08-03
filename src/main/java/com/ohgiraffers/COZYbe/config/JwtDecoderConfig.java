@@ -16,10 +16,6 @@ public class JwtDecoderConfig {
 
     private final SecretKey secretKey;
 
-//    public JwtDecoderConfig(@Value("${jwt.secret}") String secret) {
-//        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-//    }
-
     public JwtDecoderConfig(SecretKey jwtHmacKey){
         this.secretKey = jwtHmacKey;
     }

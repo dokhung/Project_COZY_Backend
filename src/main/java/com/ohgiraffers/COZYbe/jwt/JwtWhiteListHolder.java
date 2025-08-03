@@ -6,18 +6,26 @@ import org.springframework.stereotype.Component;
 public class JwtWhiteListHolder {
 
     private static final String[] WHITE_LIST = {
-//            "/**",          //모든 경로 (임시)
             "/api/auth/check-email",
             "/api/auth/register",
             "/api/auth/signup",
             "/api/auth/login",
-//            "/api/auth/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+
+            // Inquiries
+            "/api/inquiries/list",
+
+            // Plan
+            "/api/pln/list",
+            "/api/plan/{id}",
+            "/api/plan/by-nickname"
     };
 
     public String[] getWhiteList(){
         return WHITE_LIST;
     }
 }
+
+
