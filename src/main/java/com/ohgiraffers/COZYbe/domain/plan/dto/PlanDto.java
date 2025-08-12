@@ -1,18 +1,15 @@
 package com.ohgiraffers.COZYbe.domain.plan.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Getter
-@Setter
+@Getter @Setter
 public class PlanDto {
-    private Long id;
-    private String title;
-    private String status;
-    private String nickName;
-    private String planText;
-    private Long projectId;
+    @NotBlank private String nickName;
+    @NotBlank private String title;
+    @NotBlank private String status;
+    @NotBlank private String planText;
+    @NotNull  private Long projectId;
 }
