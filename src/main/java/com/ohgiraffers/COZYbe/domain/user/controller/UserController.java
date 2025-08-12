@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -154,5 +155,14 @@ public class UserController {
         UserInfoDTO userInfoDTO = userService.getUserInfo(sub);
         return ResponseEntity.ok(userInfoDTO);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
+    }
+
+
 
 }

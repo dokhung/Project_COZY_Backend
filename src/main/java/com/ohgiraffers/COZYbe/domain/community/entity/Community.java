@@ -2,6 +2,7 @@ package com.ohgiraffers.COZYbe.domain.community.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
+import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,4 +32,8 @@ public class Community extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

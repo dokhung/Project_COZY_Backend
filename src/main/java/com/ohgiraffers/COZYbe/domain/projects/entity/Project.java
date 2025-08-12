@@ -34,13 +34,11 @@ public class Project extends BaseTimeEntity {
     @Column(name = "interest", nullable = false, length = 50)
     private String interest;
 
-    // 해당 프로젝트의 게시글 연결
+    // 프로젝트의 일정
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Community> communityList = new ArrayList<>();
+    private List<Plan> plans = new ArrayList<>();
 
-    // 일정들
+    // 프로젝트의 커뮤니티
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Plan> planList = new ArrayList<>();
+    private List<Community> communities = new ArrayList<>();
 }

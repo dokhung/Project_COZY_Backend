@@ -2,12 +2,17 @@ package com.ohgiraffers.COZYbe.domain.user.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
+import com.ohgiraffers.COZYbe.domain.community.repository.CommunityRepository;
+import com.ohgiraffers.COZYbe.domain.plan.repository.PlanRepository;
+import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
+import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
 import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,12 +31,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProjectRepository projectRepository;
+    private final PlanRepository planRepository;
+    private final CommunityRepository communityRepository;
 
     private static final String UPLOAD_DIR = "uploads/profile_images/";
     private static final String SERVER_URL = "http://localhost:8080/";
 
 
-    // TODO: 회원가입
+    // 회원가입
     public User register(SignUpDTO signUpDTO, MultipartFile profileImage) throws IOException {
         String profileImageUrl = null;
         if (profileImage != null && !profileImage.isEmpty()) {
@@ -72,7 +80,7 @@ public class UserService {
 
 
 
-    // TODO : 프로필 이미지 저장
+    // 프로필 이미지 저장
     private String saveProfileImage(MultipartFile file) throws IOException {
         File uploadDir = new File(UPLOAD_DIR);
         if (!uploadDir.exists()) {
@@ -170,5 +178,21 @@ public class UserService {
     public Boolean isUserExist(String userId){
         return userRepository.existsById(UUID.fromString(userId));
     }
+
+    @Transactional
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
+        userRepository.delete(user);
+    }
+
+
+
+
+
+
+
+
+
 
 }

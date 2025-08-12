@@ -78,4 +78,8 @@ public class CommunityService {
                 .orElseThrow(()-> new RuntimeException("使用者を探せません"));
         return communityRepository.findAllByNickname(user.getNickname());
     }
+
+    public void deleteAllByProjectId(Long projectId) {
+        communityRepository.deleteAllByProject_ProjectId(projectId);
+    }
 }
