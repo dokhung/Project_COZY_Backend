@@ -74,6 +74,7 @@ public class AuthController {
         }
 
         String userId = jwtTokenProvider.decodeUserIdFromJwt(refreshToken);
+        System.out.println("userId" + userId);
         String newAccessToken = jwtTokenProvider.createToken(UUID.fromString(userId));
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
