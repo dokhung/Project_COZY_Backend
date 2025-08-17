@@ -53,4 +53,6 @@ public class CommunityController {
         communityService.deleteAllByProjectId(projectId);
         return ResponseEntity.noContent().build();
     }
+
+
 }
