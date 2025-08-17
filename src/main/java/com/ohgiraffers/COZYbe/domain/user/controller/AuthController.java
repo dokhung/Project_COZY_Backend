@@ -146,9 +146,6 @@ public class AuthController {
             @RequestParam("nickname") String nickname,
             @RequestParam("statusMessage") String statusMessage,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) {
-        System.out.println("nickname: " + nickname);
-        System.out.println("statusMessage: " + statusMessage);
-        System.out.println("profileImage: " + (profileImage != null ? profileImage.getOriginalFilename() : "없음"));
 
 
         if (token == null || !token.startsWith("Bearer ")) {
