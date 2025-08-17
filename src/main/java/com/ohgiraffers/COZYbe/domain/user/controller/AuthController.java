@@ -74,7 +74,6 @@ public class AuthController {
         }
 
         String userId = jwtTokenProvider.decodeUserIdFromJwt(refreshToken);
-        System.out.println("userId" + userId);
         String newAccessToken = jwtTokenProvider.createToken(UUID.fromString(userId));
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
@@ -202,10 +201,12 @@ public class AuthController {
         return ResponseEntity.ok(userInfoDTO);
     }
 
+    // 회원탈퇴 메소드
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());
         userService.deleteUser(userId);
+        System.out.println("userId :: " + userId);
         return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
     }
 

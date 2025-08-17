@@ -42,3 +42,7 @@ out/
 # JetBrains IDE (WebStorm, IntelliJ, etc.)
 .idea/
 /src/main/generated/
+
+# macOS Finder metadata
+.DS_Store
+
