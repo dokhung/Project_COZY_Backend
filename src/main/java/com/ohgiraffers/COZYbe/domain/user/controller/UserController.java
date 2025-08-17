@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +27,33 @@ public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+
+    // 회원가입 (프로필 이미지 포함)
+    @PostMapping(value = "/signup", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> signup(
+            @RequestPart("signUpDTO") String signUpDTOJson,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            SignUpDTO signUpDTO = objectMapper.readValue(signUpDTOJson, SignUpDTO.class);
+
+            if (!Objects.equals(signUpDTO.getConfirmPassword(), signUpDTO.getPassword())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "비밀번호가 일치하지 않습니다."));
+            }
+
+            User user = userService.register(signUpDTO, profileImage);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "회원가입 중 오류 발생: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody SignUpDTO signUpDTO){
+        UserInfoDTO userInfoDTO = userService.registerDefault(signUpDTO);
+        return ResponseEntity.ok(userInfoDTO);
+    }
 
 
     @GetMapping("/current-user")
@@ -120,32 +148,7 @@ public class UserController {
     }
 
 
-    // 회원가입 (프로필 이미지 포함)
-    @PostMapping(value = "/signup", consumes = { "multipart/form-data" })
-    public ResponseEntity<?> signup(
-            @RequestPart("signUpDTO") String signUpDTOJson,
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
 
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            SignUpDTO signUpDTO = objectMapper.readValue(signUpDTOJson, SignUpDTO.class);
-
-            if (!Objects.equals(signUpDTO.getConfirmPassword(), signUpDTO.getPassword())) {
-                return ResponseEntity.badRequest().body(Map.of("error", "비밀번호가 일치하지 않습니다."));
-            }
-
-            User user = userService.register(signUpDTO, profileImage);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "회원가입 중 오류 발생: " + e.getMessage()));
-        }
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignUpDTO signUpDTO){
-        UserInfoDTO userInfoDTO = userService.registerDefault(signUpDTO);
-        return ResponseEntity.ok(userInfoDTO);
-    }
 
 
     @GetMapping("/check-current")
@@ -154,5 +157,14 @@ public class UserController {
         UserInfoDTO userInfoDTO = userService.getUserInfo(sub);
         return ResponseEntity.ok(userInfoDTO);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
+    }
+
+
 
 }
