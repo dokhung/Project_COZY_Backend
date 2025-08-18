@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.user.dto;
+package com.ohgiraffers.COZYbe.domain.auth.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

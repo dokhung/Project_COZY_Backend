@@ -5,7 +5,7 @@ import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
+import com.ohgiraffers.COZYbe.domain.auth.service.AuthService;
 import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;

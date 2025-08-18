@@ -1,14 +1,13 @@
-package com.ohgiraffers.COZYbe.domain.user.controller;
+package com.ohgiraffers.COZYbe.domain.auth.controller;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
-import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
-import com.ohgiraffers.COZYbe.domain.user.service.BlocklistService;
+import com.ohgiraffers.COZYbe.domain.auth.dto.AuthTokenDTO;
+import com.ohgiraffers.COZYbe.domain.auth.dto.LoginDTO;
+import com.ohgiraffers.COZYbe.domain.auth.service.AuthService;
+import com.ohgiraffers.COZYbe.domain.auth.service.BlocklistService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

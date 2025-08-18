@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.user.service;
+package com.ohgiraffers.COZYbe.domain.auth.service;
 
 import org.springframework.stereotype.Service;
 
