@@ -1,17 +1,14 @@
 package com.ohgiraffers.COZYbe.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ohgiraffers.COZYbe.common.error.ApplicationException;
-import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.user.dto.*;
+import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
+import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
+import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.service.AuthService;
-import com.ohgiraffers.COZYbe.domain.user.service.BlocklistService;
+import com.ohgiraffers.COZYbe.domain.auth.service.AuthService;
 import com.ohgiraffers.COZYbe.domain.user.service.UserService;
-import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,64 +19,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+@RequestMapping("/api/user")
+public class UserController {
 
-    private final AuthService authService;
-    private final BlocklistService blocklistService;
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final AuthService authService;
 
-    //ログイン
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-        AuthTokenDTO authTokenDTO = authService.login(loginDTO);
-
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authTokenDTO.refreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .path("/")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
-        return ResponseEntity.ok()
-                .header("Set-Cookie", refreshCookie.toString())
-                .body(Map.of(
-                        "accessToken", authTokenDTO.accessToken()
-                ));
-    }
-
-    //ログアウト
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal Jwt jwt) {
-        String jti = jwt.getId();
-
-        long ttl  = jwt.getExpiresAt().toEpochMilli() - System.currentTimeMillis();
-        blocklistService.store(jti, ttl);
-        System.out.println("ttl :: " + ttl);
-        return ResponseEntity.ok().build();
-    }
-
-    //レプレシトークン
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(
-            @CookieValue(value = "refreshToken", required = false) String refreshToken
-    ){
-        if (refreshToken == null || refreshToken.isEmpty()){
-            throw new ApplicationException(ErrorCode.INVALID_TOKEN);
-        }
-
-        String userId = jwtTokenProvider.decodeUserIdFromJwt(refreshToken);
-        String newAccessToken = jwtTokenProvider.createToken(UUID.fromString(userId));
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-    }
 
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
+        log.info(token);
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 필요합니다."));
         }
@@ -146,6 +98,9 @@ public class AuthController {
             @RequestParam("nickname") String nickname,
             @RequestParam("statusMessage") String statusMessage,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) {
+        System.out.println("nickname: " + nickname);
+        System.out.println("statusMessage: " + statusMessage);
+        System.out.println("profileImage: " + (profileImage != null ? profileImage.getOriginalFilename() : "없음"));
 
 
         if (token == null || !token.startsWith("Bearer ")) {
@@ -201,7 +156,6 @@ public class AuthController {
         return ResponseEntity.ok(userInfoDTO);
     }
 
-    // 회원탈퇴 메소드
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());
@@ -209,7 +163,5 @@ public class AuthController {
         System.out.println("userId :: " + userId);
         return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
     }
-
-
 
 }

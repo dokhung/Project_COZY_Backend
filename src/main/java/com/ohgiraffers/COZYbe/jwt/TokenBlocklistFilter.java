@@ -1,6 +1,6 @@
 package com.ohgiraffers.COZYbe.jwt;
 
-import com.ohgiraffers.COZYbe.domain.user.service.BlocklistService;
+import com.ohgiraffers.COZYbe.domain.auth.service.BlocklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

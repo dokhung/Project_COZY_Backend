@@ -1,7 +1,8 @@
-package com.ohgiraffers.COZYbe.domain.user.service;
+package com.ohgiraffers.COZYbe.domain.auth.service;
 
-import com.ohgiraffers.COZYbe.domain.user.dto.AuthTokenDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.LoginDTO;
+import com.ohgiraffers.COZYbe.domain.auth.dto.AuthTokenDTO;
+import com.ohgiraffers.COZYbe.domain.auth.dto.LoginDTO;
+import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
