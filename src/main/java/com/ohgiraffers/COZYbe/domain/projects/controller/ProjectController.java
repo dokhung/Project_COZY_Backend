@@ -1,6 +1,5 @@
 package com.ohgiraffers.COZYbe.domain.projects.controller;
-
-import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectInterestDTO;
+import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectDTO;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
 import com.ohgiraffers.COZYbe.domain.projects.service.ProjectService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
@@ -25,13 +24,14 @@ public class ProjectController {
         return ResponseEntity.ok(Map.of("available", available));
     }
 
-    @PostMapping("/projectCreate")
-    public ResponseEntity<?> createProject(@RequestBody CreateProjectInterestDTO dto,
+    @PostMapping("/project-create")
+    public ResponseEntity<?> createProject(@RequestBody CreateProjectDTO dto,
                                            HttpServletRequest request) {
+//        System.out.println("dto :: " + dto.toString());
         String userId = extractUserId(request);
         Project project = projectService.createProject(dto, userId);
         return ResponseEntity.ok(Map.of(
-                "projectId", project.getProjectId(),
+                "id", project.getProjectId(),
                 "projectName", project.getProjectName()
         ));
     }
@@ -42,9 +42,11 @@ public class ProjectController {
         Project project = projectService.getProjectByUserId(userId);
 
         return ResponseEntity.ok(Map.of(
-                "hasProject", true,
                 "projectId", project.getProjectId(),
+                "hasProject", true,
                 "projectName", project.getProjectName(),
+                "leader", project.getLeaderName(),
+                "description", project.getDescription(),
                 "createdAt", project.getCreatedAt()
         ));
     }

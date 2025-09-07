@@ -11,6 +11,4 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByProjectName(String projectName);
     Optional<Project> findFirstByOwner(User owner);
-    @Transactional
-    void deleteAllByOwner_UserId(UUID userId);
 }

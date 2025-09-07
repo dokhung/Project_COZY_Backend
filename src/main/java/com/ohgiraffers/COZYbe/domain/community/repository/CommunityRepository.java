@@ -11,13 +11,13 @@ import java.util.UUID;
 
 @Repository
 public interface CommunityRepository extends JpaRepository<Community, Long> {
-    List<Community> findAllByNickname(String nickname);
-    @Transactional
-    void deleteAllByProject_ProjectId(Long projectId);
-
-    @Transactional
-    void deleteAllByUser_UserId(UUID userId);
-
-    @Transactional
-    void deleteAllByProject_ProjectIdIn(List<Long> projectIds);
+//    List<Community> findAllByNickname(String nickname);
+//    @Transactional
+//    void deleteAllByProject_ProjectId(Long projectId);
+//
+//    @Transactional
+//    void deleteAllByUser_UserId(UUID userId);
+//
+//    @Transactional
+//    void deleteAllByProject_ProjectIdIn(List<Long> projectIds);
 }

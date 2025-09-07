@@ -1,6 +1,6 @@
 package com.ohgiraffers.COZYbe.domain.projects.service;
 
-import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectInterestDTO;
+import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectDTO;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
 import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,12 +23,15 @@ public class ProjectService {
         return projectRepository.findByProjectName(projectName).isEmpty();
     }
 
-    public Project createProject(CreateProjectInterestDTO dto, String userId) {
+    public Project createProject(CreateProjectDTO dto, String userId) {
+//        System.out.println("dto :: " + dto.toString());
         User user = findUserById(userId);
 
         Project project = Project.builder()
                 .projectName(dto.getProjectName())
                 .interest(dto.getInterest())
+                .description(dto.getDescription())
+                .leaderName(dto.getLeaderName())
                 .owner(user)
                 .build();
 
@@ -38,6 +40,7 @@ public class ProjectService {
 
     public Project getProjectByUserId(String userId) {
         User user = findUserById(userId);
+
         return projectRepository.findFirstByOwner(user)
                 .orElseThrow(() -> new RuntimeException("프로젝트가 없습니다."));
     }
