@@ -15,12 +15,17 @@ import java.util.UUID;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
+
+//    @Autowired
+//    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository) {
+//        this.communityRepository = communityRepository;
+//        this.userRepository = userRepository;
+//    }
 
     @Autowired
-    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository) {
+    public CommunityService(CommunityRepository communityRepository) {
         this.communityRepository = communityRepository;
-        this.userRepository = userRepository;
     }
 
     // コミュニティーのリストを全て取ってくる
@@ -69,17 +74,17 @@ public class CommunityService {
         ));
     }
     //　ニックネームでコミュニティーを調べる。
-    public List<Community> getCommunityByNickname(String nickname){
-        return communityRepository.findAllByNickname(nickname);
-    }
+//    public List<Community> getCommunityByNickname(String nickname){
+//        return communityRepository.findAllByNickname(nickname);
+//    }
 
-    public List<Community> getCommunityByUserId(UUID userId){
-        User user  = userRepository.findById(userId)
-                .orElseThrow(()-> new RuntimeException("使用者を探せません"));
-        return communityRepository.findAllByNickname(user.getNickname());
-    }
+//    public List<Community> getCommunityByUserId(UUID userId){
+//        User user  = userRepository.findById(userId)
+//                .orElseThrow(()-> new RuntimeException("使用者を探せません"));
+//        return communityRepository.findAllByNickname(user.getNickname());
+//    }
 
-    public void deleteAllByProjectId(Long projectId) {
-        communityRepository.deleteAllByProject_ProjectId(projectId);
-    }
+//    public void deleteAllByProjectId(Long projectId) {
+//        communityRepository.deleteAllByProject_ProjectId(projectId);
+//    }
 }

@@ -1,5 +1,6 @@
 package com.ohgiraffers.COZYbe.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ohgiraffers.COZYbe.domain.community.entity.Community;
 import com.ohgiraffers.COZYbe.domain.plan.entity.Plan;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
@@ -39,15 +40,14 @@ public class User {
     @Column(name = "status_message", length = 255)
     private String statusMessage;
 
-    // 사용자가 소유한 프로젝트
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Project> ownedProjects = new ArrayList<>();
-
-    // 사용자가 작성한 커뮤니티 글
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Community> communities = new ArrayList<>();
-
-    // 사용자가 작성한 계획
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Plan> plans = new ArrayList<>();
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Project> ownedProjects = new ArrayList<>();
+//
+//    // 사용자가 작성한 커뮤니티 글
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Community> communities = new ArrayList<>();
+//
+//    // 사용자가 작성한 계획
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Plan> plans = new ArrayList<>();
 }
