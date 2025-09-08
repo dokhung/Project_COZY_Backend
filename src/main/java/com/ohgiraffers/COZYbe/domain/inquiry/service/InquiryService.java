@@ -1,10 +1,14 @@
 package com.ohgiraffers.COZYbe.domain.inquiry.service;
 
+import com.ohgiraffers.COZYbe.domain.inquiry.dto.InquiryUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.inquiry.entity.Inquiry;
 import com.ohgiraffers.COZYbe.domain.inquiry.repository.InquiryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +34,32 @@ public class InquiryService {
                 .build();
         return inquiryRepository.save(inquiry);
     }
+
+    @Transactional
+    public Inquiry updateInquiry(Long id, InquiryUpdateDTO dto, String writer){
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inquiry not found"));
+        if (!inquiry.getWriter().equals(writer)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission to update this inquiry");
+        }
+
+        inquiry.setTitle(dto.getTitle());
+        inquiry.setContent(dto.getContent());
+        inquiry.setStatus(dto.getStatus());
+        return inquiry;
+    }
+
+    @Transactional
+    public void deleteInquiry(Long id, String writer) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inquiry not found"));
+        if (!inquiry.getWriter().equals(writer)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission to delete this inquiry");
+        }
+        inquiryRepository.delete(inquiry);
+    }
+
+
 }
 
 

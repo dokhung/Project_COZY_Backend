@@ -1,14 +1,9 @@
 package com.ohgiraffers.COZYbe.domain.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ohgiraffers.COZYbe.domain.community.entity.Community;
-import com.ohgiraffers.COZYbe.domain.plan.entity.Plan;
-import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
+
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
