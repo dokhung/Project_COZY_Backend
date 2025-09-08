@@ -137,5 +137,9 @@ public class TeamService {
         }
         throw new ApplicationException(ErrorCode.NOT_ALLOWED);
     }
+
+    public boolean isTeamExist(String teamId){
+        return repository.existsById(UUID.fromString(teamId));
+    }
 }
 

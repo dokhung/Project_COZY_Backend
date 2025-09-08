@@ -1,7 +1,11 @@
 package com.ohgiraffers.COZYbe.domain.member.controller;
 
+import com.ohgiraffers.COZYbe.domain.member.dto.response.MemberListDTO;
 import com.ohgiraffers.COZYbe.domain.member.service.MemberService;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.TeamIdDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -9,11 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member")
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService service;
 
 
-    @GetMapping
-    public void memberList(){
+    @GetMapping("/list")
+    public void getMemberlist(TeamIdDTO teamIdDTO,
+                           @AuthenticationPrincipal Jwt jwt){
+        MemberListDTO dto = service.getMemberList(teamIdDTO.teamId());
 
     }
 
