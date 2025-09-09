@@ -30,7 +30,6 @@ public class InquiryService {
                 .content(content)
                 .status("처리대기")
                 .writer(writer)
-                .createdAt(LocalDateTime.now())
                 .build();
         return inquiryRepository.save(inquiry);
     }
