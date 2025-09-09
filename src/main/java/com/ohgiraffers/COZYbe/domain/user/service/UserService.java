@@ -2,7 +2,6 @@ package com.ohgiraffers.COZYbe.domain.user.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.community.repository.CommunityRepository;
 import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
 import com.ohgiraffers.COZYbe.domain.auth.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
@@ -29,8 +28,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProjectRepository projectRepository;
-    private final CommunityRepository communityRepository;
 
     private static final String UPLOAD_DIR = "uploads/profile_images/";
     private static final String SERVER_URL = "http://localhost:8080/";
