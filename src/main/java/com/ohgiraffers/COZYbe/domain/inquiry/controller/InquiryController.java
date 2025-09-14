@@ -53,7 +53,7 @@ public class InquiryController {
         String token = servletRequest.getHeader("Authorization").substring(7);
         String userId = jwtTokenProvider.decodeUserIdFromJwt(token);
         log.info("Update Inquiry OK");
-        return inquiryService.updateInquiry(id, dto, userId);
+        return inquiryService.updateInquiry(id, dto);
     }
 
 

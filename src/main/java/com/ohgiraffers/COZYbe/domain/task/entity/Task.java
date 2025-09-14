@@ -17,7 +17,7 @@ public class Task extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
+    @Column(name = "taskId")
     private Long taskId;
 
     @Column(name = "title", nullable = false)
@@ -26,7 +26,7 @@ public class Task extends BaseTimeEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "nick_name")
+    @Column(name = "nickName")
     private String nickName;
 
     // DB는 task_text
@@ -34,10 +34,11 @@ public class Task extends BaseTimeEntity {
     private String taskText;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "project_id", referencedColumnName = "project_Id")
+    @JoinColumn(name = "projectId", referencedColumnName = "projectId", nullable = false)
     private Project project;
 
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 }
