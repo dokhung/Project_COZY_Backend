@@ -33,6 +33,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         AuthTokenDTO authTokenDTO = authService.login(loginDTO);
         log.info("로그인 성공");
+        log.info("token ::" + authTokenDTO.accessToken());
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authTokenDTO.refreshToken())
                 .httpOnly(true)
                 .secure(true)

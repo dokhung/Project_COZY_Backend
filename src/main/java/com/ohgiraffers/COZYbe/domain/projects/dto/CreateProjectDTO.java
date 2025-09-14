@@ -12,10 +12,12 @@ public class CreateProjectDTO {
     // 프로젝트 이름
     private String projectName;
     // 프로젝트 종류
-    private String interest;
+    private String devInterest;
     // 프로젝트 설명
     private String description;
-    //
+    // プロジェクトマスター
     private String leaderName;
+    // gitHubUrl
+    private String gitHubUrl;
 }
 

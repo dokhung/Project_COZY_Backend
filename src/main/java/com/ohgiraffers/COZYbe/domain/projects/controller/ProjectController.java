@@ -1,10 +1,15 @@
 package com.ohgiraffers.COZYbe.domain.projects.controller;
 import com.ohgiraffers.COZYbe.domain.projects.dto.CreateProjectDTO;
+import com.ohgiraffers.COZYbe.domain.projects.dto.UpdateProjectDTO;
 import com.ohgiraffers.COZYbe.domain.projects.entity.Project;
 import com.ohgiraffers.COZYbe.domain.projects.service.ProjectService;
 import com.ohgiraffers.COZYbe.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProjectController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -67,16 +73,64 @@ public class ProjectController {
     private String extractUserId(HttpServletRequest req) {
         String token = req.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
-            throw new RuntimeException("인증 토큰이 없습니다.");
+            throw new RuntimeException("Not Token.");
         }
         return jwtTokenProvider.decodeUserIdFromJwt(token.substring(7));
     }
 
-    @DeleteMapping("/{proejctId}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long proejctId, HttpServletRequest request) {
-        String userId = extractUserId(request);
-        projectService.deleteProject(proejctId,userId);
-        return ResponseEntity.ok(Map.of("message", "프로젝트 및 관련 데이터가 삭제되었습니다."));
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long projectId, HttpServletRequest request) {
+        String auth = request.getHeader("Authorization");
+        if (auth == null || !auth.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String token = auth.substring(7);
+        String userId = jwtTokenProvider.decodeUserIdFromJwt(token);
+
+        projectService.deleteProject(projectId, userId);
+        return ResponseEntity.noContent().build();
     }
+
+
+    @PutMapping("/{projectId}")
+    public ResponseEntity<?> updateProject(@PathVariable Long projectId,
+                                           @RequestBody @Valid UpdateProjectDTO dto,
+                                           HttpServletRequest req) {
+        String userId = extractUserId(req);
+        Project p = projectService.updateProject(dto, projectId, userId);
+        return ResponseEntity.ok(Map.of(
+                "projectId", p.getProjectId(),
+                "projectName", p.getProjectName(),
+                "description", p.getDescription(),
+                "devInterest", p.getDevInterest(),
+                "githubUrl", p.getGitHubUrl(),
+                "ownerId", p.getOwner().getUserId().toString(),
+                "ownerName", p.getLeaderName(),
+                "createdAt", p.getCreatedAt()
+        ));
+    }
+
+
+
+    @GetMapping("/detail/{projectName}")
+    public ResponseEntity<?> getProjectDetail(@PathVariable String projectName,
+                                              HttpServletRequest request) {
+        String userId = extractUserId(request);
+        Project project = projectService.getProjectDetailForUser(projectName, userId);
+
+        return ResponseEntity.ok(Map.of(
+                "projectId", project.getProjectId(),
+                "projectName", project.getProjectName(),
+                "description", project.getDescription(),
+                "devInterest", project.getDevInterest(),
+                "gitHubUrl", project.getGitHubUrl(),
+                "ownerId", project.getOwner().getUserId().toString(),
+                "ownerName", project.getLeaderName(),
+                "createdAt", project.getCreatedAt()
+        ));
+    }
+
+
+
 }
 

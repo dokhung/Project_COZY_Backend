@@ -35,12 +35,9 @@ public class InquiryService {
     }
 
     @Transactional
-    public Inquiry updateInquiry(Long id, InquiryUpdateDTO dto, String writer){
+    public Inquiry updateInquiry(Long id, InquiryUpdateDTO dto){
         Inquiry inquiry = inquiryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inquiry not found"));
-        if (!inquiry.getWriter().equals(writer)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission to update this inquiry");
-        }
 
         inquiry.setTitle(dto.getTitle());
         inquiry.setContent(dto.getContent());
