@@ -1,6 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.user.entity;
 
 
+import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "tbl_user")
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
