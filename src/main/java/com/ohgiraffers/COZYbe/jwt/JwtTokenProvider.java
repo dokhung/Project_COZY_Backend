@@ -18,7 +18,6 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long expiration;
-    private final Set<String> invalidatedTokens = new HashSet<>(); // 🚀 로그아웃된 토큰 저장
 
     public JwtTokenProvider(SecretKey jwtHmacKey, @Value("${jwt.expiration}") long expiration) {
         this.secretKey = jwtHmacKey;

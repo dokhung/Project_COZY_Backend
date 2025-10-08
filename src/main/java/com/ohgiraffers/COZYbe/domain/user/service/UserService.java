@@ -151,10 +151,6 @@ public class UserService {
         return user.getUserId();
     }
 
-    public String getUserEmailById(String userId){
-        return this.findById(userId).getEmail();
-    }
-
 
     private User findUserByEmail(String email){
         return userRepository.findByEmail(email)
