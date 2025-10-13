@@ -1,8 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.projects.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
-import com.ohgiraffers.COZYbe.domain.community.entity.Community;
-import com.ohgiraffers.COZYbe.domain.plan.entity.Plan;
+import com.ohgiraffers.COZYbe.domain.task.entity.Task;
 import com.ohgiraffers.COZYbe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,34 +10,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "tbl_project")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Project extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "project_id")
+    @Column(name = "projectId")
     private Long projectId;
 
-    @Column(name = "project_name", nullable = false, unique = true, length = 100)
+    @Column(name = "projectName", nullable = false, unique = true, length = 100)
     private String projectName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ownerId", nullable = false)
     private User owner;
 
-    @Column(name = "interest", nullable = false, length = 50)
-    private String interest;
+    @Column(name = "devInterest", nullable = false, length = 50)
+    private String devInterest;
 
-    // 프로젝트의 일정
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Plan> plans = new ArrayList<>();
+    @Column(name = "description", nullable = false, length = 500)
+    private String description;
 
-    // 프로젝트의 커뮤니티
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Community> communities = new ArrayList<>();
+    @Column(name = "leader_name", nullable = false, length = 100)
+    private String leaderName;
+
+    @Column(name = "gitHubUrl", nullable = true, length = 800)
+    private String gitHubUrl;
+
+
+    @OneToMany(
+            mappedBy = "project",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<Task> tasks = new ArrayList<>();
 }

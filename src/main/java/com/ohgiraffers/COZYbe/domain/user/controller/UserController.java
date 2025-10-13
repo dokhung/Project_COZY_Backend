@@ -74,7 +74,7 @@ public class UserController {
         }
     }
 
-    // 🔹 이메일 중복 확인
+    // 이메일 중복 확인
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
         boolean isAvailable = userService.isEmailAvailable(email);
@@ -87,7 +87,7 @@ public class UserController {
             return ResponseEntity.status(401).body(Map.of("error", "인증 토큰이 없습니다."));
         }
 
-        System.out.println("🔍 받은 인증 토큰: " + token);
+        System.out.println("받은 인증 토큰: " + token);
 
 
         String userId;
@@ -100,7 +100,7 @@ public class UserController {
         String inputPassword = request.get("password");
 
         if (inputPassword == null) {
-            System.out.println("❌ 비밀번호가 전달되지 않음");
+            System.out.println("비밀번호가 전달되지 않음");
             return ResponseEntity.status(400).body(Map.of("error", "비밀번호가 필요합니다."));
         }
 
