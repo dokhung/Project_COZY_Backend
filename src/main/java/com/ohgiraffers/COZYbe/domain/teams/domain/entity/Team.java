@@ -18,14 +18,18 @@ public class Team extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID teamId;
 
-    @Column
+    @Column(nullable = false)
     private String teamName;
 
     @Column(length = 2000)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(nullable = false)
     private User leader;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private User subLeader;
 
 }
