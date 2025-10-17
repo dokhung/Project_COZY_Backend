@@ -56,7 +56,7 @@ public class MemberDomainService {
     }
 
     public List<Member> findByUser(User user) {
-        return repository.finByUser(user).orElseThrow(this::noMember);
+        return repository.findByUser(user).orElseThrow(this::noMember);
     }
 
     public List<Member> findByTeam(String teamId) {

@@ -18,7 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
 
     Optional<List<Member>> findByUser_UserId(UUID userId);
 
-    Optional<List<Member>> finByUser(User user);
+    Optional<List<Member>> findByUser(User user);
 
     Optional<List<Member>> findByTeam(Team team);
 }
