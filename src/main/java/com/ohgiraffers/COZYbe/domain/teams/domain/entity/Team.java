@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 public class Team extends BaseTimeEntity {
 
@@ -18,7 +18,7 @@ public class Team extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID teamId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String teamName;
 
     @Column(length = 2000)

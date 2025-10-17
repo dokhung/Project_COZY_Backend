@@ -35,8 +35,8 @@ public class MemberAppService {
 
     public void joinMember(String teamId, String userId) {
         domainService.createMember(
-                teamDomainService.getTeam(teamId),
-                userDomainService.getUser(userId)
+                teamDomainService.getReference(teamId),
+                userDomainService.getReference(userId)
         );
     }
 

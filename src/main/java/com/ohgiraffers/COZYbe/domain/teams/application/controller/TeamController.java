@@ -1,6 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.teams.application.controller;
 
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateSubLeaderDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
@@ -67,6 +68,19 @@ public class TeamController {
     public ResponseEntity<?> findMyTeam(@AuthenticationPrincipal Jwt jwt){
         SearchResultDTO resultDTO = teamAppService.searchTeamByUser(jwt.getSubject());
         return ResponseEntity.ok(resultDTO);
+    }
+
+    @GetMapping("/check-team-name")
+    public ResponseEntity<?> checkTeamName(@RequestParam String teamName){
+        boolean isNameExist = teamAppService.checkTeamNameExist(teamName);
+        return ResponseEntity.ok(isNameExist);
+    }
+
+    @PatchMapping("/sub-leader")
+    public ResponseEntity<?> updateSubLeader(@RequestBody UpdateSubLeaderDTO updateDTO,
+                                             @AuthenticationPrincipal Jwt jwt) {
+        teamAppService.updateSubLeader(updateDTO, jwt.getSubject());
+        return ResponseEntity.ok().build();
     }
 
 }

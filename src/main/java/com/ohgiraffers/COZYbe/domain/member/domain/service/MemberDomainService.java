@@ -38,7 +38,8 @@ public class MemberDomainService {
     }
 
     public Member getMember(UUID memberId) {
-        return repository.findById(memberId).orElseThrow(this::noMember);
+        return repository.findById(memberId)
+                .orElseThrow(this::noMember);
     }
 
     public Member getMember(String teamId, String userId) {
@@ -52,11 +53,13 @@ public class MemberDomainService {
     }
 
     public List<Member> findByUser(UUID userId) {
-        return repository.findByUser_UserId(userId).orElseThrow(this::noMember);
+        return repository.findByUser_UserId(userId)
+                .orElseThrow(this::noMember);
     }
 
     public List<Member> findByUser(User user) {
-        return repository.findByUser(user).orElseThrow(this::noMember);
+        return repository.findByUser(user)
+                .orElseThrow(this::noMember);
     }
 
     public List<Member> findByTeam(String teamId) {
@@ -64,11 +67,13 @@ public class MemberDomainService {
     }
 
     public List<Member> findByTeam(UUID teamId) {
-        return repository.findByTeam_TeamId(teamId).orElseThrow(this::noMember);
+        return repository.findByTeam_TeamId(teamId)
+                .orElseThrow(this::noMember);
     }
 
     public List<Member> findByTeam(Team team) {
-        return repository.findByTeam(team).orElseThrow(this::noMember);
+        return repository.findByTeam(team)
+                .orElseThrow(this::noMember);
     }
 
     private ApplicationException noMember() {
