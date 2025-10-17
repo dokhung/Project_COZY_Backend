@@ -7,7 +7,7 @@ import com.ohgiraffers.COZYbe.domain.user.application.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserUpdateDTO;
 import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.domain.repository.UserRepository;
+import com.ohgiraffers.COZYbe.domain.user.domain.service.UserDomainService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +25,7 @@ import java.util.*;
 @Service
 public class UserAppService {
 
-    private final UserRepository userRepository;
+    private final UserDomainService userDomainService;
     private final PasswordEncoder passwordEncoder;
 
     private static final String UPLOAD_DIR = "uploads/profile_images/";
@@ -44,7 +44,7 @@ public class UserAppService {
                 .password(passwordEncoder.encode(signUpDTO.getPassword()))
                 .profileImageUrl(profileImageUrl)
                 .build();
-        return userRepository.save(user);
+        return userDomainService.saveUser(user);
     }
 
 
@@ -62,7 +62,7 @@ public class UserAppService {
                 .statusMessage(signUpDTO.getStatusMessage())
                 .build();
 
-        User registered = userRepository.save(user);
+        User registered = userDomainService.saveUser(user);
         return new UserInfoDTO(
                 registered.getEmail(),
                 registered.getNickname(),
@@ -70,8 +70,6 @@ public class UserAppService {
                 registered.getStatusMessage()
         );
     }
-
-
 
     // 프로필 이미지 저장
     private String saveProfileImage(MultipartFile file) throws IOException {
@@ -96,9 +94,7 @@ public class UserAppService {
 
 
     public UserInfoDTO getUserInfo(String userId) {
-//        String userEmail = jwtTokenProvider.decodeUserIdFromJwt(userId);
-        User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userDomainService.getUser(userId);
         return new UserInfoDTO(
                 user.getEmail(),
                 user.getNickname(),
@@ -107,13 +103,12 @@ public class UserAppService {
         );
     }
 
-    // 이메일 중복 확인
     public boolean isEmailAvailable(String email) {
-        return userRepository.findByEmail(email).isEmpty();
+        return !userDomainService.isEmailExist(email);
     }
 
     public boolean verifyPassword(String userId, String inputPassword) {
-        User user = this.findById(userId);
+        User user = userDomainService.getUser(userId);
 
         if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -122,7 +117,7 @@ public class UserAppService {
     }
 
     public User updateUserInfo(String userId, UserUpdateDTO userUpdateDTO, MultipartFile profileImage) throws IOException {
-        User user = this.findById(userId);
+        User user = userDomainService.getUser(userId);
 
         user.setNickname(userUpdateDTO.getNickname());
         user.setStatusMessage(userUpdateDTO.getStatusMessage());
@@ -139,11 +134,11 @@ public class UserAppService {
             user.setProfileImageUrl(profileImageUrl);
         }
 
-        return userRepository.save(user);
+        return userDomainService.saveUser(user);
     }
 
     public UUID verifyUser(LoginDTO dto){
-        User user = this.findUserByEmail(dto.getEmail());
+        User user = userDomainService.getUserByEmail(dto.getEmail());
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
@@ -151,37 +146,8 @@ public class UserAppService {
     }
 
 
-    private User findUserByEmail(String email){
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
-    }
-
-    private User findById(String userId){
-        return userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
-    }
-    public User getReference(String userId){
-        return userRepository.getReferenceById(UUID.fromString(userId));
-    }
-
-    public Boolean isUserExist(String userId){
-        return userRepository.existsById(UUID.fromString(userId));
-    }
-
     @Transactional
-    public void deleteUser(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NO_SUCH_USER));
-        userRepository.delete(user);
+    public void deleteUser(String userId) {
+        userDomainService.deleteUser(userId);
     }
-
-
-
-
-
-
-
-
-
-
 }

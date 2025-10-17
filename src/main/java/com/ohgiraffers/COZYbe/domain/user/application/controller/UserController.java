@@ -160,8 +160,7 @@ public class UserController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
-        UUID userId = UUID.fromString(jwt.getSubject());
-        userAppService.deleteUser(userId);
+        userAppService.deleteUser(jwt.getSubject());
         return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
     }
 
