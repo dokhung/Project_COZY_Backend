@@ -49,6 +49,35 @@ public class TeamDomainService {
         return repository.findByTeamNameContainingIgnoreCase(searchKeyword);
     }
 
+    public List<Team> getAllTeams() {
+        return repository.findAll();
+    }
+
+    public Team saveTeam(Team team) {
+        return repository.save(team);
+    }
+
+    public void deleteTeam(Team team) {
+        repository.delete(team);
+    }
+
+    public void deleteTeam(String teamId) {
+        deleteTeam(UUID.fromString(teamId));
+    }
+
+    public void deleteTeam(UUID teamId) {
+        Team team = getTeam(teamId);
+        repository.delete(team);
+    }
+
+    public boolean isTeamExist(String teamId) {
+        return isTeamExist(UUID.fromString(teamId));
+    }
+
+    public boolean isTeamExist(UUID teamId) {
+        return repository.existsById(teamId);
+    }
+
     private ApplicationException noTeam() {
         return new ApplicationException(ErrorCode.NO_SUCH_TEAM);
     }

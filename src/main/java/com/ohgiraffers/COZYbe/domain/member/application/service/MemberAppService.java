@@ -4,27 +4,25 @@ import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.member.application.dto.response.MemberListDTO;
 import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
-import com.ohgiraffers.COZYbe.domain.member.domain.repository.MemberRepository;
 import com.ohgiraffers.COZYbe.domain.member.domain.service.MemberDomainService;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamAppService;
-import com.ohgiraffers.COZYbe.domain.user.application.service.UserAppService;
 import com.ohgiraffers.COZYbe.domain.user.domain.service.UserDomainService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class MemberAppService {
 
     private final MemberDomainService domainService;
+
     private final TeamAppService teamAppService;
     private final UserDomainService userDomainService;
+
     private final MemberMapper mapper;
 
-    private final MemberRepository repository;  //deleting
 
     public MemberListDTO getMemberList(String teamId) {
         if (!teamAppService.isTeamExist(teamId)) {
@@ -35,26 +33,13 @@ public class MemberAppService {
     }
 
     public void joinMember(String teamId, String userId) {
-        if (!teamAppService.isTeamExist(teamId)) {
-            throw new ApplicationException(ErrorCode.NO_SUCH_TEAM);
-        }
-        if (!userDomainService.isUserExist(userId)) {
-            throw new ApplicationException(ErrorCode.NO_SUCH_USER);
-        }
-        Member newMember = Member.builder()
-                .team(teamAppService.findById(teamId))
-                .memberId(UUID.fromString(userId))
-                .build();
-
-        repository.save(newMember);
+        domainService.createMember(
+                teamAppService.findById(teamId),
+                userDomainService.getUser(userId)
+        );
     }
 
     public void leaveMember(String teamId, String userId) {
-        Member member = repository.findByTeam_TeamIdAndUser_UserId(
-                UUID.fromString(teamId), UUID.fromString(userId)
-                )
-                .orElseThrow(()-> new ApplicationException(ErrorCode.NO_SUCH_USER)
-        );
-        repository.delete(member);
+        domainService.deleteMember(teamId,userId);
     }
 }

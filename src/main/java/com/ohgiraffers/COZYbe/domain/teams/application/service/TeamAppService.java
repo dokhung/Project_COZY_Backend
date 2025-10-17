@@ -2,14 +2,13 @@ package com.ohgiraffers.COZYbe.domain.teams.application.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.member.application.service.MemberAppService;
+import com.ohgiraffers.COZYbe.domain.member.domain.service.MemberDomainService;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
-import com.ohgiraffers.COZYbe.domain.teams.domain.repository.TeamRepository;
 import com.ohgiraffers.COZYbe.domain.teams.domain.service.TeamDomainService;
 import com.ohgiraffers.COZYbe.domain.user.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
@@ -19,23 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class TeamAppService {
 
-    private final TeamRepository repository;
     private final TeamDomainService domainService;
     private final TeamMapper mapper;
 
-    private final MemberAppService memberAppService;
+    private final MemberDomainService memberDomainService;
     private final UserDomainService userDomainService;
 
 
     public SearchResultDTO getAllList() {
-        List<Team> teams = repository.findAll();
+        List<Team> teams = domainService.getAllTeams();
         return new SearchResultDTO(mapper.entityListToDto(teams));
     }
 
@@ -47,23 +44,21 @@ public class TeamAppService {
                 .leader(userDomainService.getReference(userId))
                 .build();
 
-        Team created = repository.save(newTeam);
+        Team created = domainService.saveTeam(newTeam);
         log.info("팀 생성됨 : {}",created.getTeamName());
-        memberAppService.joinMember(String.valueOf(created.getTeamId()),userId);
+        memberDomainService.createMember(created, userDomainService.getUser(userId));
         return mapper.entityToDetail(created);
     }
 
 
     public Team findById(String teamId){
-        return repository.findById(UUID.fromString(teamId))
-                .orElseThrow(()->new ApplicationException(ErrorCode.NO_SUCH_TEAM));
+        return domainService.getTeam(teamId);
     }
 
     public TeamDetailDTO getTeamDetail(String teamId, String userId) {
         verifyUser(userId);
 
-        Team team= repository.findById(UUID.fromString(teamId))
-                .orElseThrow(()-> new ApplicationException(ErrorCode.NO_SUCH_TEAM));
+        Team team = domainService.getTeam(teamId);
         return mapper.entityToDetail(team);
     }
 
@@ -86,7 +81,7 @@ public class TeamAppService {
             updateDescription = updateDTO.description();
         }
 
-        Team updated = repository.save(
+        Team updated = domainService.saveTeam(
                 Team.builder()
                 .teamId(team.getTeamId())
                 .teamName(updateTeamName)
@@ -100,13 +95,13 @@ public class TeamAppService {
 
     public void deleteTeam(String teamId, String userId) {
         Team team = getIfLeader(teamId, userId);
-        repository.delete(team);
+        domainService.deleteTeam(team);
     }
 
 
     //Todo later: Elastic Search 로 변경
     public SearchResultDTO searchTeamByKeyword(String searchKeyword, Pageable pageable) {
-        List<Team> teamList= repository.findByTeamNameContainingIgnoreCase(searchKeyword);
+        List<Team> teamList = domainService.searchByName(searchKeyword);
         List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
         return new SearchResultDTO(dtoList);
     }
@@ -144,7 +139,6 @@ public class TeamAppService {
     }
 
     public boolean isTeamExist(String teamId){
-        return repository.existsById(UUID.fromString(teamId));
+        return domainService.isTeamExist(teamId);
     }
 }
-
