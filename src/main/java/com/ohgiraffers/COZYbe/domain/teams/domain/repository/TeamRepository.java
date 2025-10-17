@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -19,6 +20,6 @@ public interface TeamRepository extends JpaRepository<Team, UUID> {
     List<Team> findByTeamNameContainingIgnoreCase(String searchKeyword);
 
 
-    List<Team> findByLeaderUserId(UUID userId);
+    Optional<List<Team>> findByLeaderUserId(UUID userId);
 
 }

@@ -10,6 +10,7 @@ import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import com.ohgiraffers.COZYbe.domain.teams.domain.repository.TeamRepository;
+import com.ohgiraffers.COZYbe.domain.teams.domain.service.TeamDomainService;
 import com.ohgiraffers.COZYbe.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class TeamAppService {
 
     private final TeamRepository repository;
+    private final TeamDomainService domainService;
     private final TeamMapper mapper;
 
     private final MemberAppService memberAppService;
@@ -110,7 +112,7 @@ public class TeamAppService {
     }
 
     public SearchResultDTO searchTeamByUser(String userId) {
-        List<Team> teamList = repository.findByLeaderUserId(UUID.fromString(userId));
+        List<Team> teamList = domainService.findByLeader(userId);
         List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
         return new SearchResultDTO(dtoList);
     }
