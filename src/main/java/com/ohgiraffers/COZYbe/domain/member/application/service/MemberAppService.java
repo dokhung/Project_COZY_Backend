@@ -6,6 +6,7 @@ import com.ohgiraffers.COZYbe.domain.member.application.dto.response.MemberListD
 import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
 import com.ohgiraffers.COZYbe.domain.member.domain.service.MemberDomainService;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamAppService;
+import com.ohgiraffers.COZYbe.domain.teams.domain.service.TeamDomainService;
 import com.ohgiraffers.COZYbe.domain.user.domain.service.UserDomainService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,14 @@ public class MemberAppService {
 
     private final MemberDomainService domainService;
 
-    private final TeamAppService teamAppService;
+    private final TeamDomainService teamDomainService;
     private final UserDomainService userDomainService;
 
     private final MemberMapper mapper;
 
 
     public MemberListDTO getMemberList(String teamId) {
-        if (!teamAppService.isTeamExist(teamId)) {
+        if (!teamDomainService.isTeamExist(teamId)) {
             throw new ApplicationException(ErrorCode.NO_SUCH_TEAM);
         }
         List<Member> members = domainService.findByTeam(teamId);
@@ -34,7 +35,7 @@ public class MemberAppService {
 
     public void joinMember(String teamId, String userId) {
         domainService.createMember(
-                teamAppService.findById(teamId),
+                teamDomainService.getTeam(teamId),
                 userDomainService.getUser(userId)
         );
     }

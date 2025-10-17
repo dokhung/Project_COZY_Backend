@@ -138,7 +138,4 @@ public class TeamAppService {
         throw new ApplicationException(ErrorCode.NOT_ALLOWED);
     }
 
-    public boolean isTeamExist(String teamId){
-        return domainService.isTeamExist(teamId);
-    }
 }
