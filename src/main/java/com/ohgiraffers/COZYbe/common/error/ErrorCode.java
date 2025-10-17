@@ -19,6 +19,7 @@ public enum ErrorCode {
     NOT_ALLOWED(HttpStatus.FORBIDDEN, "AUTH-001", "허가되지 않은 접근."),
     ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "AUTH-002", "익명의 유저가 접근하였습니다."),
     NO_SUCH_TEAM(HttpStatus.NOT_FOUND, "TEAM-001", "존재하지 않는 팀."),
+    NO_SUCH_MEMBER(HttpStatus.NOT_FOUND, "MEMBER-001", "존재하지 않는 멤버."),
     ;
 
     private HttpStatus status;
