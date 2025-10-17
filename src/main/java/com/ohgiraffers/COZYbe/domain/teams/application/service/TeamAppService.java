@@ -2,7 +2,7 @@ package com.ohgiraffers.COZYbe.domain.teams.application.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.member.service.MemberService;
+import com.ohgiraffers.COZYbe.domain.member.application.service.MemberAppService;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
@@ -23,15 +23,14 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class TeamService {
+public class TeamAppService {
 
     private final TeamRepository repository;
     private final TeamMapper mapper;
 
-
-
-    private final MemberService memberService;
+    private final MemberAppService memberAppService;
     private final UserService userService;
+
 
     public SearchResultDTO getAllList() {
         List<Team> teams = repository.findAll();
@@ -48,7 +47,7 @@ public class TeamService {
 
         Team created = repository.save(newTeam);
         log.info("팀 생성됨 : {}",created.getTeamName());
-        memberService.joinMember(String.valueOf(created.getTeamId()),userId);
+        memberAppService.joinMember(String.valueOf(created.getTeamId()),userId);
         return mapper.entityToDetail(created);
     }
 

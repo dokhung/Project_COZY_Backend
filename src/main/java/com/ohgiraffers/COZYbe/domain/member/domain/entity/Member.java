@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.member.entity;
+package com.ohgiraffers.COZYbe.domain.member.domain.entity;
 
 import com.ohgiraffers.COZYbe.common.ImmutableEntity;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;

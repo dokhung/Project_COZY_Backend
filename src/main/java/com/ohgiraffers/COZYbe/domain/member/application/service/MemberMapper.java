@@ -1,7 +1,7 @@
-package com.ohgiraffers.COZYbe.domain.member.service;
+package com.ohgiraffers.COZYbe.domain.member.application.service;
 
-import com.ohgiraffers.COZYbe.domain.member.dto.response.MemberBriefDTO;
-import com.ohgiraffers.COZYbe.domain.member.entity.Member;
+import com.ohgiraffers.COZYbe.domain.member.application.dto.response.MemberBriefDTO;
+import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

@@ -1,7 +1,7 @@
-package com.ohgiraffers.COZYbe.domain.member.controller;
+package com.ohgiraffers.COZYbe.domain.member.application.controller;
 
-import com.ohgiraffers.COZYbe.domain.member.dto.response.MemberListDTO;
-import com.ohgiraffers.COZYbe.domain.member.service.MemberService;
+import com.ohgiraffers.COZYbe.domain.member.application.dto.response.MemberListDTO;
+import com.ohgiraffers.COZYbe.domain.member.application.service.MemberAppService;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.TeamIdDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/member")
 public class MemberController {
 
-    private final MemberService service;
+    private final MemberAppService service;
 
 
     @GetMapping("/list")

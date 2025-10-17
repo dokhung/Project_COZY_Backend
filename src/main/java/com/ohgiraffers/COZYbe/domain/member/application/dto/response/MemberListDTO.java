@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.member.dto.response;
+package com.ohgiraffers.COZYbe.domain.member.application.dto.response;
 
 import java.util.List;
 
