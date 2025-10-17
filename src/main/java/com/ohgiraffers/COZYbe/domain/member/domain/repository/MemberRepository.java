@@ -2,7 +2,7 @@ package com.ohgiraffers.COZYbe.domain.member.domain.repository;
 
 import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

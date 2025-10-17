@@ -5,7 +5,7 @@ import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
 import com.ohgiraffers.COZYbe.domain.member.domain.repository.MemberRepository;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

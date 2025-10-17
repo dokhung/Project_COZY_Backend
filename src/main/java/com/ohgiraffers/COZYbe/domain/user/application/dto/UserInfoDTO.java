@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.user.dto;
+package com.ohgiraffers.COZYbe.domain.user.application.dto;
 
 public record UserInfoDTO(
         String email,

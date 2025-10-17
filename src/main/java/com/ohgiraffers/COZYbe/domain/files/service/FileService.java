@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.user.service;
+package com.ohgiraffers.COZYbe.domain.files.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,7 +1,7 @@
 package com.ohgiraffers.COZYbe.domain.teams.domain.entity;
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

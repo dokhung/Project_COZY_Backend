@@ -11,7 +11,7 @@ import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDT
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import com.ohgiraffers.COZYbe.domain.teams.domain.repository.TeamRepository;
 import com.ohgiraffers.COZYbe.domain.teams.domain.service.TeamDomainService;
-import com.ohgiraffers.COZYbe.domain.user.service.UserService;
+import com.ohgiraffers.COZYbe.domain.user.application.service.UserAppService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class TeamAppService {
     private final TeamMapper mapper;
 
     private final MemberAppService memberAppService;
-    private final UserService userService;
+    private final UserAppService userAppService;
 
 
     public SearchResultDTO getAllList() {
@@ -44,7 +44,7 @@ public class TeamAppService {
         Team newTeam = Team.builder()
                 .teamName(createTeamDTO.teamName())
                 .description(createTeamDTO.description())
-                .leader(userService.getReference(userId))
+                .leader(userAppService.getReference(userId))
                 .build();
 
         Team created = repository.save(newTeam);
@@ -124,7 +124,7 @@ public class TeamAppService {
      * Jwt 토큰에서 받아온 유저가 유효한지 검사
      * */
     private void verifyUser(String userId){
-        if (!userService.isUserExist(userId)){
+        if (!userAppService.isUserExist(userId)){
             throw new ApplicationException(ErrorCode.INVALID_USER);
         }
     }

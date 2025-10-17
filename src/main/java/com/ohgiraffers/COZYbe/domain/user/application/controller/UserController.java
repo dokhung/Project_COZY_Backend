@@ -1,12 +1,12 @@
-package com.ohgiraffers.COZYbe.domain.user.controller;
+package com.ohgiraffers.COZYbe.domain.user.application.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.SignUpDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.UserInfoDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.UserUpdateDTO;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
 import com.ohgiraffers.COZYbe.domain.auth.service.AuthService;
-import com.ohgiraffers.COZYbe.domain.user.service.UserService;
+import com.ohgiraffers.COZYbe.domain.user.application.service.UserAppService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserService userService;
+    private final UserAppService userAppService;
     private final AuthService authService;
 
     // 회원가입 (프로필 이미지 포함)
@@ -42,7 +42,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(Map.of("error", "비밀번호가 일치하지 않습니다."));
             }
 
-            User user = userService.register(signUpDTO, profileImage);
+            User user = userAppService.register(signUpDTO, profileImage);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "회원가입 중 오류 발생: " + e.getMessage()));
@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody SignUpDTO signUpDTO){
-        UserInfoDTO userInfoDTO = userService.registerDefault(signUpDTO);
+        UserInfoDTO userInfoDTO = userAppService.registerDefault(signUpDTO);
         return ResponseEntity.ok(userInfoDTO);
     }
 
@@ -66,7 +66,7 @@ public class UserController {
         try {
             String jwt = token.substring(7);
             String userId = authService.getUserIdFromToken(jwt);
-            UserInfoDTO userInfoDTO = userService.getUserInfo(userId);
+            UserInfoDTO userInfoDTO = userAppService.getUserInfo(userId);
             return ResponseEntity.ok(userInfoDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class UserController {
     // 이메일 중복 확인
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
-        boolean isAvailable = userService.isEmailAvailable(email);
+        boolean isAvailable = userAppService.isEmailAvailable(email);
         return ResponseEntity.ok(Map.of("available", isAvailable));
     }
 
@@ -105,7 +105,7 @@ public class UserController {
         }
 
         try {
-            boolean isValid = userService.verifyPassword(userId, inputPassword);
+            boolean isValid = userAppService.verifyPassword(userId, inputPassword);
 
             if (isValid) {
                 System.out.println("✅ 비밀번호 확인 성공");
@@ -138,7 +138,7 @@ public class UserController {
             String userId = authService.getUserIdFromToken(token.substring(7));
 
             UserUpdateDTO dto = new UserUpdateDTO(nickname, statusMessage);
-            User updatedUser = userService.updateUserInfo(userId, dto, profileImage);
+            User updatedUser = userAppService.updateUserInfo(userId, dto, profileImage);
 
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
@@ -154,14 +154,14 @@ public class UserController {
     @GetMapping("/check-current")
     public ResponseEntity<?> checkCurrentUser(@AuthenticationPrincipal Jwt jwt){
         String sub = jwt.getSubject();
-        UserInfoDTO userInfoDTO = userService.getUserInfo(sub);
+        UserInfoDTO userInfoDTO = userAppService.getUserInfo(sub);
         return ResponseEntity.ok(userInfoDTO);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());
-        userService.deleteUser(userId);
+        userAppService.deleteUser(userId);
         return ResponseEntity.ok(Map.of("message", "회원탈퇴가 완료되었습니다."));
     }
 

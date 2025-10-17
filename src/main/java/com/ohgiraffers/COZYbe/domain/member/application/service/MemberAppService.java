@@ -7,7 +7,7 @@ import com.ohgiraffers.COZYbe.domain.member.domain.entity.Member;
 import com.ohgiraffers.COZYbe.domain.member.domain.repository.MemberRepository;
 import com.ohgiraffers.COZYbe.domain.member.domain.service.MemberDomainService;
 import com.ohgiraffers.COZYbe.domain.teams.application.service.TeamAppService;
-import com.ohgiraffers.COZYbe.domain.user.service.UserService;
+import com.ohgiraffers.COZYbe.domain.user.application.service.UserAppService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class MemberAppService {
 
     private final MemberDomainService domainService;
     private final TeamAppService teamAppService;
-    private final UserService userService;
+    private final UserAppService userAppService;
     private final MemberMapper mapper;
 
     private final MemberRepository repository;  //deleting
@@ -37,7 +37,7 @@ public class MemberAppService {
         if (!teamAppService.isTeamExist(teamId)) {
             throw new ApplicationException(ErrorCode.NO_SUCH_TEAM);
         }
-        if (!userService.isUserExist(userId)) {
+        if (!userAppService.isUserExist(userId)) {
             throw new ApplicationException(ErrorCode.NO_SUCH_USER);
         }
         Member newMember = Member.builder()

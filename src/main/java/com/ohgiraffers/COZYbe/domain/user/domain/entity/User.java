@@ -1,4 +1,4 @@
-package com.ohgiraffers.COZYbe.domain.user.entity;
+package com.ohgiraffers.COZYbe.domain.user.domain.entity;
 
 
 import com.ohgiraffers.COZYbe.common.BaseTimeEntity;

@@ -1,14 +1,13 @@
-package com.ohgiraffers.COZYbe.domain.user.service;
+package com.ohgiraffers.COZYbe.domain.user.application.service;
 
 import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
-import com.ohgiraffers.COZYbe.domain.projects.repository.ProjectRepository;
 import com.ohgiraffers.COZYbe.domain.auth.dto.LoginDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.SignUpDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.UserInfoDTO;
-import com.ohgiraffers.COZYbe.domain.user.dto.UserUpdateDTO;
-import com.ohgiraffers.COZYbe.domain.user.entity.User;
-import com.ohgiraffers.COZYbe.domain.user.repository.UserRepository;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.SignUpDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.UserInfoDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.UserUpdateDTO;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
+import com.ohgiraffers.COZYbe.domain.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +23,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class UserAppService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
