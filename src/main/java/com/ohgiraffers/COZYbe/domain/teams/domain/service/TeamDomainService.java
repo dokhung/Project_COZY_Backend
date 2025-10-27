@@ -56,6 +56,10 @@ public class TeamDomainService {
         return repository.findAll();
     }
 
+    public List<Team> getAllById(List<UUID> teamIds) {
+        return repository.findAllById(teamIds);
+    }
+
     public Team saveTeam(Team team) {
         return repository.save(team);
     }

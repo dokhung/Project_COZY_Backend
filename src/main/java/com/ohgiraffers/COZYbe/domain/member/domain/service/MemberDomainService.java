@@ -76,6 +76,14 @@ public class MemberDomainService {
                 .orElseThrow(this::noMember);
     }
 
+    public List<UUID> findTeamIdsByUser(String userId) {
+        return findTeamIdsByUser(UUID.fromString(userId));
+    }
+
+    public List<UUID> findTeamIdsByUser(UUID userId) {
+        return repository.findTeamIdsByUserId(userId);
+    }
+
     private ApplicationException noMember() {
         return new ApplicationException(ErrorCode.NO_SUCH_MEMBER);
     }

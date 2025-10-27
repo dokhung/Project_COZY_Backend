@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -101,11 +102,12 @@ public class TeamAppService {
         return new SearchResultDTO(dtoList);
     }
 
-    public SearchResultDTO searchTeamByUser(String userId) {
-        List<Team> teamList = domainService.findByLeader(userId);
-        List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
-        return new SearchResultDTO(dtoList);
-    }
+     public SearchResultDTO searchTeamByUser(String userId) {
+      List<UUID> teamIds = memberDomainService.findTeamIdsByUser(userId);
+      List<Team> teams = domainService.getAllById(teamIds);
+      List<TeamNameDTO> dtoList = mapper.entityListToDto(teams);
+      return new SearchResultDTO(dtoList);
+  }
 
 
     ///*********** Verifier ***********///
