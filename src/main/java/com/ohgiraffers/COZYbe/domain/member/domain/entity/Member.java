@@ -20,11 +20,11 @@ public class Member extends ImmutableEntity {
     private UUID memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teamId")
+    @JoinColumn
     private Team team;
 
 }

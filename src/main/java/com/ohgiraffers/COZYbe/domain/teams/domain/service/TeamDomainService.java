@@ -30,7 +30,8 @@ public class TeamDomainService {
     }
 
     public Team getTeam(UUID teamId) {
-        return repository.findById(teamId).orElseThrow(this::noTeam);
+        return repository.findById(teamId)
+                .orElseThrow(this::noTeam);
     }
 
     public List<Team> findByLeader(String userId) {
@@ -38,11 +39,13 @@ public class TeamDomainService {
     }
 
     public List<Team> findByLeader(UUID userId) {
-        return repository.findByLeaderUserId(userId).orElseThrow(this::noTeam);
+        return repository.findByLeaderUserId(userId)
+                .orElseThrow(this::noTeam);
     }
 
     public List<Team> findByLeader(User leader) {
-        return repository.findByLeaderUserId(leader.getUserId()).orElseThrow(this::noTeam);
+        return repository.findByLeaderUserId(leader.getUserId())
+                .orElseThrow(this::noTeam);
     }
 
     public List<Team> searchByName(String searchKeyword) {
@@ -51,6 +54,10 @@ public class TeamDomainService {
 
     public List<Team> getAllTeams() {
         return repository.findAll();
+    }
+
+    public List<Team> getAllById(List<UUID> teamIds) {
+        return repository.findAllById(teamIds);
     }
 
     public Team saveTeam(Team team) {
@@ -66,8 +73,7 @@ public class TeamDomainService {
     }
 
     public void deleteTeam(UUID teamId) {
-        Team team = getTeam(teamId);
-        repository.delete(team);
+        repository.delete(getTeam(teamId));
     }
 
     public boolean isTeamExist(String teamId) {
@@ -76,6 +82,18 @@ public class TeamDomainService {
 
     public boolean isTeamExist(UUID teamId) {
         return repository.existsById(teamId);
+    }
+
+    public boolean isTeamNameExist(String teamName){
+        return repository.existsByTeamName(teamName);
+    }
+
+    public Team getReference(String teamId) {
+        return getReference(UUID.fromString(teamId));
+    }
+
+    public Team getReference(UUID teamId) {
+        return repository.getReferenceById(teamId);
     }
 
     private ApplicationException noTeam() {

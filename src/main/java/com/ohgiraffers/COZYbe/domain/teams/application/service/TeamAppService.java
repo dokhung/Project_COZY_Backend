@@ -4,12 +4,14 @@ import com.ohgiraffers.COZYbe.common.error.ApplicationException;
 import com.ohgiraffers.COZYbe.common.error.ErrorCode;
 import com.ohgiraffers.COZYbe.domain.member.domain.service.MemberDomainService;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.CreateTeamDTO;
+import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateSubLeaderDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.request.UpdateTeamDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.SearchResultDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamNameDTO;
 import com.ohgiraffers.COZYbe.domain.teams.application.dto.response.TeamDetailDTO;
 import com.ohgiraffers.COZYbe.domain.teams.domain.entity.Team;
 import com.ohgiraffers.COZYbe.domain.teams.domain.service.TeamDomainService;
+import com.ohgiraffers.COZYbe.domain.user.domain.entity.User;
 import com.ohgiraffers.COZYbe.domain.user.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,14 +48,13 @@ public class TeamAppService {
                 .build();
 
         Team created = domainService.saveTeam(newTeam);
-        log.info("팀 생성됨 : {}",created.getTeamName());
+        log.info("팀 생성됨 : {}", created.getTeamName());
         memberDomainService.createMember(created, userDomainService.getUser(userId));
         return mapper.entityToDetail(created);
     }
 
-
-    public Team findById(String teamId){
-        return domainService.getTeam(teamId);
+    public boolean checkTeamNameExist(String teamName) {
+        return domainService.isTeamNameExist(teamName);
     }
 
     public TeamDetailDTO getTeamDetail(String teamId, String userId) {
@@ -63,34 +65,28 @@ public class TeamAppService {
     }
 
     public TeamDetailDTO updateTeam(UpdateTeamDTO updateDTO, String userId) {
-        if (updateDTO.teamId() == null || updateDTO.teamId().isEmpty()){
-            throw new ApplicationException(ErrorCode.NO_SUCH_TEAM);
-        }
-
         Team team = getIfLeader(updateDTO.teamId(), userId);
 
-        String updateTeamName, updateDescription;
-        if (updateDTO.teamName() == null || updateDTO.teamName().isEmpty()){
-            updateTeamName = team.getTeamName();
-        }else{
-            updateTeamName = updateDTO.teamName();
-        }
-        if (updateDTO.description() == null || updateDTO.description().isEmpty()){
-            updateDescription = team.getDescription();
-        }else {
-            updateDescription = updateDTO.description();
-        }
-
         Team updated = domainService.saveTeam(
-                Team.builder()
-                .teamId(team.getTeamId())
-                .teamName(updateTeamName)
-                .description(updateDescription)
-                .leader(team.getLeader())
-                .build()
+                team.toBuilder()
+                        .teamName((updateDTO.teamName() == null || updateDTO.teamName().isEmpty())
+                                ? team.getTeamName()    //참(비었으면)
+                                : updateDTO.teamName()) //거짓(값이 있으면)
+                        .description((updateDTO.description() == null || updateDTO.description().isEmpty())
+                                ? team.getDescription()
+                                : updateDTO.description())
+                        .build()
         );
 
         return mapper.entityToDetail(updated);
+    }
+
+    public void updateSubLeader(UpdateSubLeaderDTO updateDTO, String leaderId) {
+        Team team = getIfLeader(updateDTO.teamId(), leaderId);
+        User newSubLeader = userDomainService.getReference(updateDTO.subLeaderId());
+        domainService.saveTeam(team.toBuilder()
+                .subLeader(newSubLeader)
+                .build());
     }
 
     public void deleteTeam(String teamId, String userId) {
@@ -106,33 +102,38 @@ public class TeamAppService {
         return new SearchResultDTO(dtoList);
     }
 
-    public SearchResultDTO searchTeamByUser(String userId) {
-        List<Team> teamList = domainService.findByLeader(userId);
-        List<TeamNameDTO> dtoList = mapper.entityListToDto(teamList);
-        return new SearchResultDTO(dtoList);
-    }
+     public SearchResultDTO searchTeamByUser(String userId) {
+      List<UUID> teamIds = memberDomainService.findTeamIdsByUser(userId);
+      List<Team> teams = domainService.getAllById(teamIds);
+      List<TeamNameDTO> dtoList = mapper.entityListToDto(teams);
+      return new SearchResultDTO(dtoList);
+  }
 
 
     ///*********** Verifier ***********///
 
     /**
      * Jwt 토큰에서 받아온 유저가 유효한지 검사
-     * */
-    private void verifyUser(String userId){
-        if (!userDomainService.isUserExist(userId)){
+     *
+     */
+    private void verifyUser(String userId) {
+        if (!userDomainService.isUserExist(userId)) {
             throw new ApplicationException(ErrorCode.INVALID_USER);
         }
     }
 
+
     /**
      * 팀 리더인지 판단
+     *
      * @param teamId 가져올 팀
      * @param userId 팀 리더 일때 return
      * @return Team 엔티티
-     * */
-    private Team getIfLeader(String teamId, String userId){
-        Team team = findById(teamId);
-        if (team.getLeader().getUserId().toString().equals(userId)){
+     *
+     */
+    private Team getIfLeader(String teamId, String userId) {
+        Team team = domainService.getReference(teamId);
+        if (team.getLeader().getUserId().toString().equals(userId)) {
             return team;
         }
         throw new ApplicationException(ErrorCode.NOT_ALLOWED);
