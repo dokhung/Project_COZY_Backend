@@ -180,15 +180,15 @@ public class UserAppService {
     private UserInfoDTO toUserInfoDTO(User user) {
         UserInfoDTO dto = userMapper.EntityToInfoDTO(user);
         String profileKeyOrUrl = user.getProfileImageUrl();
-        String presigned = fileService.getProfileImageUrl(profileKeyOrUrl);
-        if (presigned == null) {
-            presigned = fileService.getProfileImageUrl(fileService.getDefaultProfileImageDir());
+        String profileImageUrl = fileService.getProfileImageUrl(profileKeyOrUrl);
+        if (profileImageUrl == null) {
+            profileImageUrl = fileService.getProfileImageUrl(fileService.getDefaultProfileImageDir());
         }
         return new UserInfoDTO(
                 dto.userId(),
                 dto.email(),
                 dto.nickname(),
-                presigned,
+                profileImageUrl,
                 dto.statusMessage(),
                 dto.role(),
                 dto.themeMode(),
