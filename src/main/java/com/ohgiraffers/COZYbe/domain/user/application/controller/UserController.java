@@ -2,6 +2,9 @@ package com.ohgiraffers.COZYbe.domain.user.application.controller;
 
 
 import com.ohgiraffers.COZYbe.domain.auth.application.dto.LoginDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.FindEmailDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.FindEmailResponseDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.ResetPasswordDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserSettingsDTO;
@@ -52,6 +55,31 @@ public class UserController {
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
         boolean isAvailable = userAppService.isEmailAvailable(email);
         return ResponseEntity.ok(Map.of("available", isAvailable));
+    }
+
+    @Operation(summary = "아이디 찾기", description = "닉네임으로 가입 이메일을 마스킹하여 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 처리 되었습니다."),
+            @ApiResponse(responseCode = "404", description = "해당 유저는 존재하지 않습니다."),
+            @ApiResponse(responseCode = "500", description = "예상치 못한 예러")
+    })
+    @PostMapping("/find-email")
+    public ResponseEntity<?> findEmail(@RequestBody FindEmailDTO findEmailDTO) {
+        FindEmailResponseDTO response = userAppService.findEmailByNickname(findEmailDTO.nickname());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "비밀번호 재설정", description = "이메일과 닉네임 확인 후 새 비밀번호로 변경")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 처리 되었습니다."),
+            @ApiResponse(responseCode = "404", description = "해당 유저는 존재하지 않습니다."),
+            @ApiResponse(responseCode = "422", description = "비밀번호 입력값이 유효하지 않습니다."),
+            @ApiResponse(responseCode = "500", description = "예상치 못한 예러")
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+        userAppService.resetPassword(resetPasswordDTO);
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 변경되었습니다."));
     }
 
     @Operation(summary = "패스워드 재확인", description = "로그인된 유저의 패스워드 확인")

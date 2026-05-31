@@ -7,6 +7,8 @@ import com.ohgiraffers.COZYbe.domain.auth.application.dto.LoginDTO;
 import com.ohgiraffers.COZYbe.domain.auth.domain.entity.RefreshToken;
 import com.ohgiraffers.COZYbe.domain.auth.domain.service.RefreshTokenService;
 import com.ohgiraffers.COZYbe.domain.files.service.FileService;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.FindEmailResponseDTO;
+import com.ohgiraffers.COZYbe.domain.user.application.dto.ResetPasswordDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.SignUpDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserInfoDTO;
 import com.ohgiraffers.COZYbe.domain.user.application.dto.UserSettingsDTO;
@@ -75,6 +77,37 @@ public class UserAppService {
 
     public boolean isEmailAvailable(String email) {
         return !userDomainService.isEmailExist(email);
+    }
+
+    public FindEmailResponseDTO findEmailByNickname(String nickname) {
+        if (isBlank(nickname)) {
+            throw new ApplicationException(ErrorCode.NO_SUCH_USER);
+        }
+
+        User user = userDomainService.getUserByNickname(nickname.trim());
+        return new FindEmailResponseDTO(maskEmail(user.getEmail()));
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        if (resetPasswordDTO == null
+                || isBlank(resetPasswordDTO.email())
+                || isBlank(resetPasswordDTO.nickname())
+                || isBlank(resetPasswordDTO.newPassword())
+                || isBlank(resetPasswordDTO.confirmPassword())) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        if (!resetPasswordDTO.newPassword().equals(resetPasswordDTO.confirmPassword())) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        User user = userDomainService.getUserByEmail(resetPasswordDTO.email().trim());
+        if (!user.getNickname().equals(resetPasswordDTO.nickname().trim())) {
+            throw new ApplicationException(ErrorCode.NO_SUCH_USER);
+        }
+
+        user.setPassword(passwordEncoder.encode(resetPasswordDTO.newPassword()));
     }
 
     public Boolean verifyPassword(String userId, String inputPassword) {
@@ -175,6 +208,25 @@ public class UserAppService {
         if (Boolean.TRUE.equals(user.getBlocked())) {
             throw new ApplicationException(ErrorCode.NOT_ALLOWED);
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String maskEmail(String email) {
+        int atIndex = email.indexOf("@");
+        if (atIndex <= 0) {
+            return email;
+        }
+
+        String localPart = email.substring(0, atIndex);
+        String domainPart = email.substring(atIndex);
+        if (localPart.length() <= 2) {
+            return localPart.charAt(0) + "*" + domainPart;
+        }
+
+        return localPart.substring(0, 2) + "*".repeat(Math.max(1, localPart.length() - 2)) + domainPart;
     }
 
     private UserInfoDTO toUserInfoDTO(User user) {

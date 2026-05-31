@@ -10,6 +10,8 @@ public class JwtWhiteListHolder {
             "/api/user/signup",
             "/api/user/register",
             "/api/user/check-email",
+            "/api/user/find-email",
+            "/api/user/reset-password",
 
             // 기존 auth 경로 (로그인 관련)
             "/api/auth/login",
