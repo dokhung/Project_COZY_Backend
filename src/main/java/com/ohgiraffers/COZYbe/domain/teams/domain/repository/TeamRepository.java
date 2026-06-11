@@ -19,4 +19,5 @@ public interface TeamRepository extends JpaRepository<Team, UUID> {
     Optional<List<Team>> findByLeaderUserId(UUID userId);
 
     boolean existsByTeamName(String teamName);
+    Optional<Team> findByTeamName(String teamName);
 }

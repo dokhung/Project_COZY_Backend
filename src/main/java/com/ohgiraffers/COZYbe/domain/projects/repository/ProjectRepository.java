@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project,UUID> {
     boolean existsByProjectName(String projectName);
+    Optional<Project> findByProjectName(String projectName);
 
     List<Project> findAllByTeam_TeamIdOrderByCreatedAtDesc(UUID teamId);
 
