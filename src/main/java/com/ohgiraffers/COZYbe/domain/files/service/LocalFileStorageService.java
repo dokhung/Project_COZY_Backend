@@ -54,6 +54,27 @@ public class LocalFileStorageService {
         return PROFILE_IMAGE_DIR + "/" + fileName;
     }
 
+    public String uploadTaskAttachment(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty() || file.getSize() > 10 * 1024 * 1024L) {
+            throw new IllegalArgumentException("Invalid task attachment.");
+        }
+        String originalName = file.getOriginalFilename();
+        String safeName = (originalName == null || originalName.isBlank())
+                ? "file"
+                : Paths.get(originalName).getFileName().toString()
+                .replaceAll("[^a-zA-Z0-9._-]", "_");
+        Path directory = uploadRoot.resolve("task_attachments").normalize();
+        Files.createDirectories(directory);
+        Path destination = directory.resolve(UUID.randomUUID() + "-" + safeName).normalize();
+        if (!destination.startsWith(directory)) {
+            throw new IllegalArgumentException("Invalid file name.");
+        }
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return uploadRoot.relativize(destination).toString().replace("\\", "/");
+    }
+
     public String getPublicUrl(String keyOrUrl) {
         if (keyOrUrl == null || keyOrUrl.isBlank()) {
             return null;

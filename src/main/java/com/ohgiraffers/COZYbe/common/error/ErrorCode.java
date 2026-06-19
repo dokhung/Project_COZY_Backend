@@ -40,6 +40,7 @@ public enum ErrorCode {
     ALREADY_TEAM_MEMBER(HttpStatus.CONFLICT, "JOIN-003", "이미 가입한 팀입니다."),
     REQUEST_ALREADY_PROCESSED(HttpStatus.CONFLICT, "JOIN-004", "이미 처리된 요청입니다."),
     INVALID_REJECT_REASON(HttpStatus.UNPROCESSABLE_ENTITY, "JOIN-005", "거부 사유가 유효하지 않습니다."),
+    INVALID_TASK(HttpStatus.UNPROCESSABLE_ENTITY, "TASK-002", "Invalid task data."),
     INVALID_CHAT_MESSAGE(HttpStatus.UNPROCESSABLE_ENTITY, "CHAT-001", "Chat message must be between 1 and 1000 characters."),
     INVALID_CHAT_ROOM(HttpStatus.UNPROCESSABLE_ENTITY, "CHAT-002", "Invalid chat room settings."),
     NO_SUCH_CHAT_ROOM(HttpStatus.NOT_FOUND, "CHAT-003", "Chat room not found."),

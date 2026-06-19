@@ -1,7 +1,10 @@
 package com.ohgiraffers.COZYbe.domain.task.dto;
 
+import com.ohgiraffers.COZYbe.domain.task.enums.TaskPriority;
+import com.ohgiraffers.COZYbe.domain.task.enums.TaskStatus;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,9 +14,13 @@ public record TaskDetailDTO(
         UUID projectId,
         UUID userId,
         String title,
-        String nickName,
-        String status,
+        String assigneeNickname,
+        TaskStatus status,
+        TaskPriority priority,
         String taskText,
-        LocalDateTime createdAt
+        LocalDate startDate,
+        LocalDate dueDate,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }
