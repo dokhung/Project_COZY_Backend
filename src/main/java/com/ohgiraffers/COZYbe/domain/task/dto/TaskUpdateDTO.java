@@ -4,20 +4,15 @@ import com.ohgiraffers.COZYbe.domain.task.enums.TaskPriority;
 import com.ohgiraffers.COZYbe.domain.task.enums.TaskStatus;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record TaskListDTO(
-        Long taskId,
+public record TaskUpdateDTO(
+        UUID assigneeId,
         String title,
-        String assigneeNickname,
         TaskStatus status,
         TaskPriority priority,
         String taskText,
-        UUID userId,
         LocalDate startDate,
-        LocalDate dueDate,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDate dueDate
 ) {
 }
